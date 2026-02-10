@@ -1,0 +1,107 @@
+% =========================
+% logos.sty — versión ajustada
+% =========================
+% Limpieza de encabezados, fuentes, colores y enlaces.
+% Incluye estilo de portada (plain) con logos y estilo general (fancy) con autores/título corto.
+
+% --------- Codificación y tipografía ---------
+\usepackage[utf8]{inputenc}
+\usepackage{parskip}
+\usepackage{verbatim}
+\usepackage{abstract}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{blindtext}
+\usepackage{fancyhdr}
+\usepackage{titling}
+\usepackage{caption}
+\usepackage{dcolumn}
+\usepackage[affil-sl]{authblk}
+\usepackage{ragged2e}        % usar \justifying en el .tex donde se necesite
+\usepackage{orcidlink}
+\usepackage{booktabs}
+\usepackage{array}
+
+% Fuente tipo Times moderna (texto y matemáticas)
+\usepackage{newtxtext,newtxmath}
+
+% --------- Colores e hipervínculos ---------
+\usepackage{xcolor}
+\definecolor{carnelian}{rgb}{0.7,0.1,0}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=carnelian, % enlaces internos
+  urlcolor=carnelian,  % URLs
+  citecolor=carnelian  % citas bibliográficas
+}
+
+% --------- Columnas y nombres de elementos ---------
+\setlength{\columnsep}{1cm}
+\renewcommand{\refname}{Referencias}
+\renewcommand{\figurename}{Fig.}
+
+% --------- Palabras clave ---------
+\providecommand{\keywordsSpan}[1]{%
+  \small\textbf{\textit{Palabras Clave:}} #1%
+}
+\providecommand{\keywordsEng}[1]{%
+  \small\textbf{\textit{Keywords:}} #1%
+}
+
+% --------- Estilo de captions en tablas ---------
+\captionsetup[table]{%
+  position=above,
+  justification=raggedright,
+  labelsep=newline,
+  singlelinecheck=false
+}
+
+% --------- Formato de secciones ---------
+% Evitar interlineado de 1pt (peligroso). Usar tamaños razonables.
+\titleformat*{\section}{\fontsize{11pt}{13.2pt}\selectfont\bfseries\color{carnelian}}
+\titleformat*{\subsection}{\fontsize{11pt}{13.2pt}\selectfont\bfseries\itshape\color{carnelian}}
+
+\titlespacing*{\section}{0pt}{1cm}{0.2cm}
+\titlespacing*{\subsection}{0pt}{0.8cm}{0.2cm}
+
+% --------- Encabezados y pies de página (estilo general) ---------
+% Reemplaza el placeholder "Apellido, N., et al." por autores y título corto del proyecto.
+\pagestyle{fancy}
+\fancyhf{} % limpia encabezado y pie
+
+% --- Encabezado páginas normales (no plain) ---
+% Izquierda: autores abreviados; Derecha: título corto del avance/proyecto
+\fancyhead[LO]{Avilés M.; Carpio J.; Contreras F.; Guzmán P.; Merino Ó.; Vicencio J.}
+\fancyhead[RO]{Estación Meteorológica (Coquimbo)}
+
+% Pie centrado: número de página
+\fancyfoot[CO]{\footnotesize\thepage}
+
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% --------- Estilo "plain" (portada y páginas con \thispagestyle{plain}) ---------
+% Mantiene los logos en los extremos superiores como en tu plantilla original.
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0.5pt}
+  \renewcommand{\footrulewidth}{0pt}
+  \fancyheadoffset[LO]{0\textwidth}
+  \fancyhead[LO]{\includegraphics[scale=0.25]{logo-ucn.png}}
+  \fancyhead[RO]{\includegraphics[scale=0.63]{logo-eic.png}}
+  \fancyfoot[CO]{\footnotesize\thepage}
+}
+
+% --------- Balanceo de columnas en la última página ---------
+\usepackage{balance}
+\makeatletter
+\newcommand{\balancecolumns}{%
+  \vfill\eject
+  \global\@colht = \textheight
+  \global\ht\@cclv = \textheight}
+\makeatother
+
+% --------- Fin de logos.sty ---------

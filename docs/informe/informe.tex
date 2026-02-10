@@ -1,0 +1,568 @@
+\documentclass[a4paper,twocolumn,11pt]{article}
+\usepackage[a4paper,left=2cm,right=2cm,top=2cm,bottom=2.5cm]{geometry}
+\input{logos.sty}
+\usepackage[spanish]{babel}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{url}
+\usepackage{placeins}
+
+% Evita advertencias de fancyhdr con encabezado alto
+\setlength{\headheight}{60pt}
+
+% Color de respaldo por si no está definido en logos.sty
+\makeatletter
+\@ifundefined{color@carnelian}{\definecolor{carnelian}{RGB}{179,27,27}}{}
+\makeatother
+
+% Estilo consistente para captions de figuras
+\captionsetup[figure]{font=small,labelfont=bf}
+
+% Ajuste de floats para reducir espacios grandes
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.75}
+\setlength{\textfloatsep}{8pt}
+\setlength{\intextsep}{8pt}
+
+% Ayuda a evitar underfull en lineas largas
+\setlength{\emergencystretch}{1.5em}
+
+% Sube el bloque del titulo
+\setlength{\droptitle}{-1.2cm}
+
+% Estilo consistente para figuras
+\captionsetup[figure]{font=small,labelfont=bf}
+
+%%%%%%%%%%%%%%%%% ENCABEZADO %%%%%%%%%%%%%%%%%%%%
+
+{\title{\vspace*{0.2cm}\Large{Estación Meteorológica de Código Abierto para la Región de Coquimbo}}}
+\date{6 de diciembre de 2025}
+
+% Integrantes: todos ICI salvo Pablo Guzmán y Óscar Merino (ICCI)
+\author[1]{\fontsize{10pt}{10pt}\selectfont \textbf{Martín Avilés (ICI)}}
+\author[1]{\textbf{Javiera Carpio (ICI)}}
+\author[2]{\textbf{Óscar Merino (ICCI)}}
+\author[1]{\textbf{Francisco Contreras (ICI)}}
+\author[2]{\textbf{Pablo Guzmán (ICCI)}}
+\author[1]{\textbf{Jorge Vicencio (ICI)}}
+
+\affil[1]{Universidad Católica del Norte — Ingeniería Civil Industrial (ICI)}
+\affil[2]{Universidad Católica del Norte — Ingeniería Civil en Computación e Informática (ICCI)}
+
+%%%%%%%%%%%%%%%%%% Inicio de Documento %%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\twocolumn
+[\begin{@twocolumnfalse}
+\maketitle \vspace*{0.1cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%% RESUMEN %%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\abstractname}{\textcolor{carnelian}{RESUMEN}}
+\begin{abstract}
+\vspace*{0.5cm}
+\fontsize{10pt}{10pt}\selectfont
+\justify
+Este \textbf{informe final} presenta el diseño de una \textbf{estación meteorológica y de calidad del aire} de bajo costo y \textit{código abierto}, enfocada en la \textbf{Región de Coquimbo} (Norte Chico). Se define un \textbf{prototipo muestral} (demostrativo, de interior), con \textbf{backend local}, esquema de datos y lineamientos \textbf{QA/QC} para uso indicativo, sin pruebas de campo. La \textbf{pertinencia territorial} se sustenta en: (i) la \textbf{megasequía 2010–presente} con déficit cercano al 30\% en el tramo Coquimbo–La Araucanía \cite{CR2_site,CR2_2015}, (ii) \textbf{decretos de escasez hídrica} en la región \cite{DGA_decretos,BCN_Elqui2025}, (iii) la \textbf{necesidad de granularidad intraurbana} que complemente la red oficial (SINCA) \cite{SINCA_portal,SINCA_LaSerena}, y (iv) el \textbf{alto recurso solar} para futuras etapas fotovoltaicas \cite{GSA}. El documento integra \textbf{PESTEL}, \textbf{Fuerzas de Porter} y \textbf{FODA}, planificación, sostenibilidad y cumplimiento normativo como base para escalamiento.
+\end{abstract}
+
+\vspace{0.1cm}
+\hspace*{0.7cm}
+\vspace*{0.5cm}
+\end{@twocolumnfalse}]
+
+%%%%%%%%%%%%%%%%%%%%%%%% 1. CONTEXTO %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Contexto}
+\textbf{Ámbito territorial:} Región de Coquimbo (Elqui, Limarí, Choapa) con referencia al Norte Chico.\\
+\textbf{Empresa propuesta (sin nombre definitivo):} organización \textit{código abierto} para educación STEM y ciencia ciudadana, con futura articulación con colegios y municipios.\\
+\textbf{Propósito del informe:} \underline{prototipo muestral} con documentación técnica y \textbf{lineamientos QA/QC}, sin despliegue.
+
+\subsection*{Descripción breve del proyecto}
+El proyecto pertenece al \textbf{sector IoT ambiental y educativo}. Consiste en una \textbf{estación meteorológica y de calidad del aire de bajo costo}, con hardware abierto y sensores accesibles, que mide temperatura, humedad, presión, CO$_2$ y material particulado (PM$_{2.5}$ y PM$_{10}$). Los datos se transmiten a un \textbf{backend local} y se visualizan en un panel web simple para uso educativo y comunitario. El diseño es \textbf{modular y escalable}, y se plantea una \textbf{escala piloto} de 1--3 estaciones en fase muestral, con potencial de red barrial en etapas posteriores.
+
+\subsection*{Modelo estratégico: misión, visión y valores}
+\textbf{Misión:} diseñar y fabricar estaciones inteligentes que midan clima y calidad del aire, difundiendo datos locales abiertos para fortalecer la educación ambiental y la toma de decisiones.\\
+\textbf{Visión:} liderar soluciones accesibles de monitoreo ambiental comunitario en el Norte Chico, promoviendo sostenibilidad y adaptación al cambio climático.\\
+\textbf{Valores:} responsabilidad ambiental, transparencia de datos, innovación sustentable, conservación de recursos y educación ambiental.
+
+\subsection*{Estructura organizacional propuesta}
+Se propone una estructura mínima que cumpla la rúbrica (personal científico, estudiantes y apoyo). El modelo organizacional se resume en la Figura~\ref{fig:modelo-organizacional}. Los cargos son \textbf{provisorios} y pueden reasignarse. \textbf{Inv.} indica \textbf{invitado}:
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item \textbf{Dirección General} (ICI): estrategia y relacionamiento territorial.
+  \item \textbf{Dirección Técnica} (ICCI): arquitectura, estándares de datos, QA/QC.
+  \item \textbf{Asesoría Científica} (académico/a UCN): guía metodológica y validación.
+  \item \textbf{Cientista de Datos} (posgrado): depuración, indicadores y documentación de calidad.
+  \item \textbf{Líder Hardware y Energía} (ICCI): electrónica, sensórica y prefactibilidad fotovoltaica.
+  \item \textbf{Líder Software y Datos} (ICCI): firmware, \textit{backend} local y esquema de datos.
+  \item \textbf{Coordinación de Vinculación} (ICI): escuelas, municipios, PARCC.
+  \item \textbf{Encargado/a Q-HSEC} (ICI): seguridad, ambiente y control documental.
+  \item \textbf{Técnico/a de Laboratorio} (apoyo): prototipado y mantenimiento de banco.
+  \item \textbf{Operaciones y Compras} (ICI): logística y abastecimiento.
+  \item \textbf{Estudiantes ICI} (4): Avilés, Carpio, Contreras, Vicencio.
+  \item \textbf{Estudiantes ICCI} (2): Merino, Guzmán.
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1.0\linewidth]{figuras/organizacion.jpg}
+\caption{Modelo estratégico organizacional del proyecto (Inv. = invitado).}
+\label{fig:modelo-organizacional}
+\end{figure}
+
+%%%%%%%%%%%%%%%%% 2. DESCRIPCIÓN DEL PROBLEMA U OPORTUNIDAD %%%%%%%%%%%%%%%%%
+\section{Descripción del problema u oportunidad (ampliada)}
+\subsection*{2.1. Situación actual en Coquimbo / Norte Chico}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item \textbf{Sequía estructural:} la ``\emph{megasequía}'' 2010–presente ha generado un déficit pluviométrico cercano al 30\%, con alta severidad en el Norte Chico \cite{CR2_site,CR2_2015}. La \textbf{escasez hídrica} ha sido reiteradamente decretada por DGA en provincias de Coquimbo \cite{DGA_decretos,BCN_Elqui2025}.
+  \item \textbf{Calidad del aire:} la conurbación de La Serena y Coquimbo cuenta con \textbf{pocas estaciones oficiales} (SINCA); sirven de referencia regional, pero son \textbf{insuficientes} para capturar variaciones \emph{barriales/microclimáticas} útiles en educación y participación ciudadana \cite{SINCA_portal,SINCA_LaSerena}.
+  \item \textbf{Viabilidad energética:} el \textbf{alto GHI} del Norte Chico (Global Solar Atlas) sugiere que, en fases futuras, los nodos podrían ser autónomos con \textbf{energía solar} \cite{GSA}.
+\end{itemize}
+
+\subsection*{2.2. Brechas específicas}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item \textbf{Granularidad espacial:} falta \emph{resolución intraurbana} para explorar \textbf{islas de calor} y focos locales de MP (\emph{p.ej.}, vías con alto tráfico, zonas con polvo resuspendido).
+  \item \textbf{Alfabetización climática/ambiental:} se requieren \textbf{herramientas educativas} basadas en datos locales para aula y talleres municipales.
+  \item \textbf{Democratización de datos:} escasa disponibilidad de \textbf{datos abiertos} locales de fácil uso para docentes y comunidad.
+  \item \textbf{Transparencia y acceso:} se requiere disponer de \emph{firmware} y \emph{software} de código abierto, así como plataformas de datos con documentación clara y API abierta, que permitan auditar, replicar y adaptar las mediciones ambientales por parte de escuelas y comunidades.
+\end{enumerate}
+
+\subsection*{2.3. Usuarios y necesidades}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item \textbf{Escuelas/colegios:} actividades STEM con mediciones reales (\emph{series temporales, comparaciones en aula}).
+  \item \textbf{Municipios/SECPLAN/DAOMA:} bases para proyectos de \textbf{educación ambiental} y sensibilización.
+  \item \textbf{Comunidad:} comprensión de \textbf{variabilidad barrial} y \textbf{riesgos locales} asociados a calor y MP.
+\end{itemize}
+
+\subsection*{2.4. Justificación e impacto ingenieril-ambiental}
+La exposición a PM$_{2.5}$ se asocia a carga sanitaria global y múltiples efectos cardiorrespiratorios \cite{WHO_facts,SoGA2024}. Redes de sensores \emph{low-cost}, \textbf{con QA/QC}, \textbf{complementan} la red oficial para fines \textbf{indicativos}, educación y ciencia ciudadana \cite{Morawska2018,Karagulian2019,Watne2021,Giordano2021,SchoolAIR2023}. El enfoque local en Coquimbo agrega \textbf{pertinencia territorial} (sequía, polvo, brisas costeras, confort térmico), habilitando \textbf{aprendizaje activo} y una futura red abierta \textbf{escalable}.
+
+Además, la adopción de un \textbf{firmware de código abierto} y una \textbf{plataforma de datos abiertos} no solo mejora la accesibilidad, la transparencia y la reproducibilidad de las mediciones, sino que permite que cualquier actor pueda auditar, adaptar y ampliar la funcionalidad del sistema. Proyectos como \emph{Smart Citizen} demuestran que el uso de licencias abiertas para hardware, software y datos empodera a las comunidades y fomenta la colaboración, facilitando la réplica de estaciones en distintas regiones \cite{SmartCitizen}. La Agencia de Protección Ambiental de Estados Unidos (EPA) resalta la disponibilidad de herramientas de código abierto para procesar y visualizar grandes volúmenes de datos de sensores, reduciendo barreras para implementar redes de monitoreo comunitarias \cite{EPA_AirSensorTools}. No obstante, trabajos sobre plataformas abiertas de hardware y ciencia ciudadana subrayan que la fiabilidad, el mantenimiento y la formación local son fundamentales para la sostenibilidad de estas iniciativas \cite{OpenHardwareWilson,NASA_OpenHardware}. Por ello, el proyecto publicará el firmware bajo una licencia abierta, documentará la API y establecerá un \emph{pipeline} de datos transparente, además de incluir capacitaciones para usuarios, buscando maximizar el impacto educativo y social en la Región de Coquimbo y su escalabilidad al Norte Chico.
+
+\subsection*{2.5. Hipótesis y resultados esperados de esta etapa muestral}
+\textbf{H1:} un \emph{prototipo muestral} bien documentado + guía QA/QC + materiales didácticos aumenta la \textbf{alfabetización} en medición ambiental en aula.\\
+\textbf{H2:} con \textbf{bajo costo} y \textbf{diseño abierto} se puede escalar gradualmente hacia piloto co-ubicado y, luego, \textbf{red barrial} con datos abiertos.
+
+%%%%%%%%%%%%%%%%%%%%%%%% 3. ANÁLISIS DEL ENTORNO %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Análisis del entorno}
+\subsection{PESTEL}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{Político:} avance del \textbf{PARCC Coquimbo} (gobernanza climática, educación ambiental, seguridad hídrica/energética) \cite{PARCC_site,PARCC_acta,PARCC_anteproy}.
+  \item \textbf{Económico:} restricciones presupuestarias en municipios y escuelas favorecen soluciones \textbf{costo-efectivas} y abiertas.
+  \item \textbf{Social:} demanda por \textbf{participación} y educación basada en datos; proyectos escolares mejoran alfabetización científica \cite{SchoolAIR2023}.
+  \item \textbf{Tecnológico:} sensórica \emph{low-cost} viable para uso \textbf{indicativo} con calibración y QA/QC \cite{Karagulian2019,Giordano2021,Watne2021}.
+  \item \textbf{Ambiental:} \textbf{megasequía} persistente en Norte Chico \cite{CR2_site,CR2_2015}; interés por microclima urbano y eventos de MP.
+  \item \textbf{Legal:} \textbf{escasez hídrica} (DGA) y marco de calidad del aire; permisos de instalación (aplicables en futuras fases) \cite{DGA_decretos,BCN_Elqui2025,SINCA_portal}.
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1.0\linewidth]{figuras/pestel.jpg}
+\caption{Análisis PESTEL del contexto regional.}
+\label{fig:pestel}
+\end{figure}
+
+\subsection{Fuerzas de Porter}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{Rivalidad:} baja–media; oferta comercial costosa vs. propuesta \textit{open} educativa (no regulatoria).
+  \item \textbf{Nuevos entrantes:} media; barreras tecnológicas moderadas, mayores en \textbf{QA/QC} y articulación territorial.
+  \item \textbf{Sustitutos:} estaciones oficiales y satelitales; no entregan por sí solos \textbf{granularidad barrial} ni aprendizaje activo.
+  \item \textbf{Poder de proveedores:} medio; variabilidad entre sensores \emph{low-cost} exige selección y calibración \cite{Karagulian2019}.
+  \item \textbf{Poder de clientes/usuarios:} medio–alto; sensibilidad a precio, soporte y \textbf{utilidad educativa}.
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1.0\linewidth]{figuras/porter.jpg}
+\caption{Fuerzas de Porter aplicadas al proyecto.}
+\label{fig:porter}
+\end{figure}
+
+\subsection{FODA}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{Fortalezas:} diseño abierto; costo accesible; modularidad; valor pedagógico; documentación de QA/QC.
+  \item \textbf{Oportunidades:} alineamiento con \textbf{PARCC}; posible escalamiento a \textbf{red barrial} con energía solar (alto GHI) \cite{GSA}.
+  \item \textbf{Debilidades:} sesgos por HR/temperatura y deriva; requiere \textbf{co-ubicación/calibración} para usos cuantitativos \cite{Karagulian2019,Giordano2021}.
+  \item \textbf{Amenazas:} percepción pública si no se comunica el carácter \emph{indicativo}; vandalismo en despliegues futuros; cambios normativos.
+\end{itemize}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1.0\linewidth]{figuras/foda.jpg}
+\caption{Matriz FODA de la iniciativa.}
+\label{fig:foda}
+\end{figure}
+
+\FloatBarrier
+
+%%%%%%%%%%%%%%%%%%% 4. PLANEACIÓN ADMINISTRATIVA %%%%%%%%%%%%%%%%%%%
+\section{Planeación administrativa del proyecto (ampliada)}
+\subsection{Objetivo general (OG)}
+Desarrollar un \textbf{prototipo muestral} (interior) de estación meteorológica y de calidad del aire con un \emph{firmware de código abierto} y \emph{plataforma de datos transparente}, documentando su \textbf{arquitectura}, \textbf{BOM}, \textbf{firmware}, \textbf{esquema de datos} y \textbf{lineamientos QA/QC}, junto con \textbf{materiales didácticos} introductorios, como base para etapas de \textbf{piloto co-ubicado} y \textbf{red barrial} en la Región de Coquimbo.
+
+\subsection{Objetivos específicos (OE) — claros y medibles}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item \textbf{OE1 — Prototipo físico de mesa:} ensamblar y verificar en banco un prototipo con BME280 (clima) y sensor óptico de MP (PM$_{2.5}$/PM$_{10}$), logrando \textbf{$\geq$95\%} de \emph{completitud de datos} en sesiones de 2–4 h. \emph{Entregables:} BOM, esquema eléctrico, fotos y checklist de verificación.
+  \item \textbf{OE2 — Firmware y adquisición:} desarrollar un \textbf{firmware de código abierto} y un script de adquisición local (CSV/SQLite), que incluya un \textbf{diccionario de datos}, documentación de la API y marcado de \emph{flags} de calidad (\texttt{status}), publicando el código en un repositorio abierto con licencia permisiva. \emph{Entregables:} repositorio con código comentado, guía de uso y especificación de la API.
+  \item \textbf{OE3 — QA/QC v0.1:} redactar lineamientos de \textbf{aseguramiento y control de calidad} para usos \emph{indicativos} (rango físico, \%validez, reloj, bitácora; guía de co-ubicación futura). \emph{Entregables:} documento QA/QC (2–3 págs) con checklist.
+  \item \textbf{OE4 — Visualización:} producir un \textbf{mock} de \textit{dashboard} (estático) con 3 vistas mínimas: \emph{serie temporal}, \emph{resumen diario} y \emph{tarjetas de variables}. \emph{Entregables:} imágenes o HTML estático y breve guía.
+  \item \textbf{OE5 — Guía docente:} elaborar \textbf{2 actividades} de aula (una de \emph{gráfica temporal} y otra de \emph{comparación intra-aula}) con objetivos, materiales, pasos, preguntas guía y rúbrica corta. \emph{Entregables:} PDF (2–3 págs).
+  \item \textbf{OE6 — Ruta de escalamiento:} definir hoja de ruta a \emph{piloto co-ubicado} (sin ejecutarlo) y \emph{red barrial} (alto nivel), incluyendo \textbf{prefactibilidad solar} (uso de GHI regional) y pasos de calibración relativa. \emph{Entregables:} documento (2 págs) con hitos y supuestos.
+  \item \textbf{OE7 — Licenciamiento y datos abiertos:} proponer licencias abiertas adecuadas para el \emph{software} (MIT o AGPL), el \emph{hardware} y los \emph{datos} (CC BY, ODbL), asegurando que el firmware, el diseño del hardware y el esquema de base de datos sean reutilizables y auditables; y elaborar una \textbf{política de datos} con metadatos, actualizaciones, control de versiones y acceso mediante API pública. \emph{Entregables:} archivos \texttt{LICENSE} y \texttt{DATOS.md}, junto con documentación de acceso abierto.
+\end{enumerate}
+
+\subsection{Alcance (de esta etapa muestral) — límites claros}
+\textbf{Incluye:}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item Prototipo \textbf{muestral} de interior (sin exposición ambiental).
+  \item Documentación técnica (BOM, esquemas, firmware), \textbf{esquema de datos} y QA/QC v0.1.
+  \item \textbf{Mock} de visualización y \textbf{guía docente} (2 actividades).
+  \item Nota de \textbf{viabilidad y escalabilidad} (ruta a piloto y red; prefactibilidad solar y co-ubicación).
+\end{itemize}
+\textbf{Fuera de alcance (ahora):}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item Pruebas de campo, piloto urbano y publicación de datos abiertos en producción.
+  \item Energía solar definitiva y comunicaciones inalámbricas.
+  \item Carcasa exterior IP y validación metrológica completa.
+\end{itemize}
+
+\subsection*{Planificación (Carta Gantt)}
+La planificación se estructura con hitos de arquitectura HW/SW, firmware, prototipo físico, web beta, pruebas y calibración, y redacción del paper. La carta Gantt se presenta en la Figura~\ref{fig:gantt}.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=1.0\linewidth]{figuras/carta-gantt.jpg}
+\caption{Carta Gantt del proyecto.}
+\label{fig:gantt}
+\end{figure}
+
+\subsection*{Criterios de aceptación (para cierre del Avance 1)}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{CA1:} prototipo en banco operando con \(\geq\)95\% de completitud en sesión de 2–4 h (log de adquisición + checklist).
+  \item \textbf{CA2:} documentación mínima: BOM, esquema, diccionario de datos y guía QA/QC v0.1.
+  \item \textbf{CA3:} \textbf{mock} de \textit{dashboard} con 3 vistas y guía docente con 2 actividades.
+  \item \textbf{CA4:} ruta de escalamiento y propuesta de licenciamiento/datos abiertos entregadas.
+\end{itemize}
+
+\subsection*{Supuestos, restricciones y riesgos (síntesis)}
+\textbf{Supuestos:} acceso a laboratorio/aula; disponibilidad de PC para adquisición local; horarios coordinados.\\
+\textbf{Restricciones:} sin pruebas de campo; componente \emph{low-cost} con sesgos; tiempo acotado del semestre.\\
+\textbf{Riesgos y respuesta:}
+\begin{itemize}[leftmargin=*,itemsep=1.5pt]
+\RaggedRight
+  \item \emph{Deriva/sesgo sensor MP}: uso \textbf{indicativo}, QA/QC v0.1 y guía de co-ubicación futura \cite{Giordano2021,Watne2021}.
+  \item \emph{Fallas de adquisición y registro}: pruebas unitarias, \%validez y almacenamiento redundante (CSV + bitácora).
+  \item \emph{Sobrecarga del equipo}: dividir tareas por OE y \textbf{cierre incremental} de entregables.
+\end{itemize}
+
+\subsection*{Identificación de recursos necesarios}
+\textbf{Humanos:} 6 estudiantes (ICI/ICCI) y roles invitados para QA-QHSEC, legal y análisis de datos.\\
+\textbf{Tecnológicos:}\\
+ESP32-S3, BME280, DHT22 y SCD4x; sensor óptico de MP; fuente USB; materiales de carcasa.\\
+\textbf{Financieros:} estación piloto estimada entre \textbf{CLP 100.000--150.000}, considerando sensores, microcontrolador y materiales básicos.
+
+\subsection*{Localización del proyecto}
+Se propone un \textbf{piloto en la Universidad Catolica del Norte, Campus Guayacan}, con montaje en azotea o area techada, acceso a energia, resguardo fisico y permisos municipales. El sitio permite control de ingreso y vinculo directo con actividades STEM. Coordenadas de referencia del campus: $-29.9593$, $-71.3232$.
+
+\begin{figure}[!htbp]
+\centering
+\begin{tikzpicture}[scale=0.9]
+  % Marco
+  \draw[thick] (0,0) rectangle (6,4);
+  \node at (3,3.7) {\small Coquimbo (esquema)};
+
+  % Costa
+  \draw[thick,blue] (1,0.4) .. controls (0.8,1.0) and (1.2,1.6) .. (1.0,2.2)
+                    .. controls (0.8,2.8) and (1.1,3.2) .. (0.9,3.6);
+  \node[blue] at (0.95,0.2) {\tiny Oceano Pacifico};
+
+  % Zona urbana y campus
+  \draw[thick] (2.2,1.1) rectangle (5.2,2.9);
+  \node at (3.7,3.1) {\tiny Zona urbana};
+  \filldraw[red] (3.4,1.9) circle (2.2pt);
+  \node[right] at (3.5,1.9) {\tiny UCN Campus Guayacan};
+\end{tikzpicture}
+\caption{Localizacion esquematica del piloto en UCN Campus Guayacan, Coquimbo.}
+\label{fig:localizacion}
+\end{figure}
+
+\section{Sustentabilidad y cumplimiento}
+\subsection*{Estrategias de sostenibilidad}
+El proyecto prioriza \textbf{energía solar} en fases futuras, reutilización de materiales para carcasa y \textbf{ciencia ciudadana} como base de apropiación local. Se alinea con ODS 13 y con la \textbf{NDC de Chile} al aportar datos para adaptación climática \cite{NDC_Chile}.
+
+\subsection*{Estrategias de producción limpia}
+Se aplican principios de producción limpia con herramientas de ingeniería: \textbf{ecodiseño} (modularidad y reparación), matriz de prevención de residuos y \textbf{ACV simplificado} (ISO 14040) para priorizar mejoras en materiales y transporte. Se seleccionan componentes de bajo consumo, se reduce residuo electrónico y se planifica logística con traslados mínimos y soldadura sin plomo. Estas acciones traducen compromisos climáticos a mejoras operativas, en línea con APL y normativa de producción limpia \cite{NCh2797_APL,ISO14040}.
+
+\subsection*{Huella de carbono e hídrica (estimación)}
+\textbf{Huella de carbono:} estimación preliminar de \textbf{15--20 kg CO$_2$e por estación/año} en fase de producción y transporte, calculada con enfoque GHG Protocol (alcances 2 y 3 simplificados). En operación se busca \textbf{emisión casi nula} mediante energía solar \cite{GHGProtocol}.\\
+\textbf{Huella hídrica:} baja en producción (fabricación de componentes) y nula en operación; se reporta con la guía de Water Footprint Network para distinguir huella azul/verde/gris a nivel indicativo \cite{WFN}.
+
+\subsection*{Economía circular y ecología industrial}
+Se adopta un enfoque circular con \textbf{carcasa reutilizable}, reemplazo de módulos y programa de recuperación de sensores. Se promueve la integración con talleres locales para reducir transporte y facilitar remanufactura, coherente con los principios de economía circular y ecología industrial revisados en el curso.
+
+\subsection*{Sistema integrado Q-HSEC}
+El plan Q-HSEC integra calidad, seguridad, medioambiente y comunidad bajo referencia a ISO 9001, ISO 14001 e ISO 45001. Incluye: (i) protocolos de instalación segura, (ii) bitácora de mantenimiento, (iii) manejo responsable de residuos electrónicos, (iv) indicadores de incidentes, (v) verificación de calidad de datos con QA/QC v0.1 y (vi) revisión trimestral de cumplimiento. Indicadores propuestos: tasa de fallas por mes, \% de registros válidos, \% de mantenimiento ejecutado y \% de residuos electrónicos gestionados correctamente \cite{ISO9001,ISO14001,ISO45001}.
+
+\subsection*{Comunidad y entorno}
+El proyecto se implementa con \textbf{participación temprana} de comunidades educativas, talleres de alfabetización climática y publicación de datos abiertos. Se propone un plan de relacionamiento con: (i) reunión inicial con directivos y apoderados, (ii) taller bimestral con estudiantes, (iii) publicación mensual de reportes y (iv) canal de retroalimentación comunitaria. Indicadores: numero de participantes, numero de talleres y nivel de satisfacción (encuesta corta). La experiencia de conflictos socioambientales en Chile refuerza la necesidad de transparencia, trazabilidad y co-diseño con actores locales.
+
+\subsection*{Legislación vigente y cumplimiento}
+\textbf{Ambiental:} se considera la Ley 19.300 (SEIA, participación y responsabilidad por daño ambiental) y la Ley Marco de Cambio Climático 21.455, que orienta metas de mitigación y adaptación \cite{Ley19300,Ley21455}. Por la escala piloto, se anticipa que no requiere EIA, pero se revisan permisos y condiciones locales.\\
+\textbf{Administración y laboral:} se consideran el Código del Trabajo (DFL 1/2003) y la Ley 16.744 sobre accidentes del trabajo y enfermedades profesionales para garantizar seguridad y cumplimiento en actividades de montaje y operación \cite{CodigoTrabajo,Ley16744}.
+
+%%%%%%%%%%%%%%%%%%%%%%%% CIERRE %%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Arquitectura del sistema}
+El prototipo se organiza en tres capas que operan en un flujo continuo de datos:
+\textbf{(i) hardware sensórico} basado en ESP32-S3 y sensores ambientales; \textbf{(ii) firmware} que adquiere, valida y fusiona mediciones, y las envía por HTTP; y \textbf{(iii) backend local} que almacena los datos en formato JSONL y sirve una interfaz web para visualización básica. El ESP32 crea un punto de acceso Wi-Fi y el PC se conecta a esa red para recibir mediciones.
+
+\subsection*{Flujo de datos}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item Lectura periódica de sensores (temperatura, humedad, presión, CO$_2$, GPS).
+  \item Fusión y cálculo de promedios, con estimación de incertidumbre.
+  \item Envío de JSON al backend por HTTP (POST).
+  \item Persistencia en \texttt{mediciones.jsonl} y actualización de API.
+  \item Visualización en página web con gráficos y estado del sistema.
+\end{enumerate}
+
+\section{Diseño de hardware y conexionado}
+El prototipo muestral es de interior y se alimenta desde USB. La selección de sensores prioriza bajo costo y disponibilidad, manteniendo redundancia para temperatura y humedad.
+
+\subsection*{Componentes principales}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{ESP32-S3}: microcontrolador con Wi-Fi integrado.
+  \item \textbf{BME280}: sensor para temperatura, humedad y presión; bus I2C (0x76/0x77).
+  \item \textbf{DHT22}: temperatura y humedad (GPIO).
+  \item \textbf{SCD4x}: CO$_2$, temperatura y humedad (I2C).
+  \item \textbf{GPS}: posición y número de satélites (UART).
+\end{itemize}
+
+\subsection*{Pines y buses}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{I2C}: SDA = GPIO 17, SCL = GPIO 18.
+  \item \textbf{DHT22}: DATA = GPIO 7.
+  \item \textbf{GPS}: RX = GPIO 40, TX = GPIO 41 (Serial1 a 9600 bps).
+\end{itemize}
+
+\subsection*{Recomendaciones de montaje}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item Evitar corrientes de aire directas y fuentes de calor puntuales.
+  \item Mantener los sensores a la misma altura para coherencia de lectura.
+  \item Separar el SCD4x de superficies que acumulen calor.
+  \item GPS requiere cielo abierto para fijar satélites.
+\end{itemize}
+
+\section{Firmware y lógica de medición}
+El firmware realiza lecturas frecuentes, acumula promedios y genera un JSON agregado que representa el estado oficial del último intervalo. Además, implementa un \textbf{auto-test} inicial para verificar la disponibilidad de sensores.
+
+\subsection*{Frecuencias de muestreo}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item Lectura de sensores cada 2 s, intervalo de medida \texttt{INTERVALO\_MEDIDA\_MS = 2000}.
+  \item Envío de JSON agregado cada 20 s al backend local (\texttt{INTERVALO\_JSON\_MS = 20000}).
+\end{itemize}
+
+\subsection*{Fusión de temperatura y humedad}
+Se combinan tres fuentes (BME280, DHT22 y SCD4x). Si las lecturas son coherentes, se usa el promedio; si hay dispersión, se prioriza el sensor más confiable.
+
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{Temperatura}: umbral de rango 2~$^\circ$C. Si el rango $\leq 2$, se promedia; si no, se elige SCD4x $>$ BME280 $>$ DHT22. Incertidumbre base: 0.8 / 0.5 / 1.0~$^\circ$C.
+  \item \textbf{Humedad}: umbral de rango 10~\%HR. Si el rango $\leq 10$, se promedia; si no, se elige SCD4x $>$ BME280 $>$ DHT22. Incertidumbre base: 3 / 3 / 5~\%HR.
+\end{itemize}
+
+\subsection*{Estructura del JSON}
+El ESP32 genera un JSON con las variables fusionadas y metadatos. El backend agrega \texttt{id} y \texttt{timestamp} al persistir.
+
+\section{Backend, almacenamiento y visualización}
+El backend está implementado en Node.js con Express. Recibe JSON vía \texttt{/api/mediciones}, guarda cada medición en \texttt{data/mediciones.jsonl} y mantiene un buffer en memoria para respuestas rápidas. La interfaz web consume la API y grafica temperatura, humedad, presión y CO$_2$.
+
+\subsection*{Endpoints principales}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item \textbf{GET} \texttt{/api/status}: estado del servidor y última medición.
+  \item \textbf{GET} \texttt{/api/mediciones}: listado completo o limitado con \texttt{?limit}.
+  \item \textbf{GET} \texttt{/api/mediciones/ultimo}: última medición almacenada.
+  \item \textbf{POST} \texttt{/api/mediciones}: ingreso de nueva medición desde el ESP32.
+\end{itemize}
+
+\section{Esquema de datos}
+El archivo JSONL contiene una medición por línea. Los campos principales y unidades se presentan en la Tabla~\ref{tab:esquema-datos}.
+
+\begin{table}[ht]
+\centering
+\caption{Campos del esquema de datos}
+\label{tab:esquema-datos}
+\small
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{>{\RaggedRight\arraybackslash}p{0.46\linewidth}>{\RaggedRight\arraybackslash}p{0.42\linewidth}}
+\toprule
+\textbf{Campo} & \textbf{Descripción / Unidad} \\
+\midrule
+\texttt{temperatura\_\allowbreak aire\_\allowbreak celsius} & Temperatura del aire fusionada ($^\circ$C) \\
+\texttt{incertidumbre\_\allowbreak temperatura\_\allowbreak celsius} & Incertidumbre estimada de temperatura ($^\circ$C) \\
+\texttt{humedad\_\allowbreak aire\_\allowbreak porcentaje} & Humedad relativa fusionada (\%HR) \\
+\texttt{incertidumbre\_\allowbreak humedad\_\allowbreak porcentaje} & Incertidumbre estimada de humedad (\%HR) \\
+\texttt{presion\_\allowbreak atmosferica\_\allowbreak hPa} & Presión atmosférica (hPa) \\
+\texttt{concentracion\_\allowbreak CO2\_\allowbreak ppm} & Concentración de CO$_2$ (ppm) \\
+\texttt{latitud\_\allowbreak grados} & Latitud (grados decimales) \\
+\texttt{longitud\_\allowbreak grados} & Longitud (grados decimales) \\
+\texttt{numero\_\allowbreak satelites} & Número de satélites GPS \\
+\texttt{timestamp} & Fecha y hora ISO-8601 (agregado por backend) \\
+\texttt{id} & Identificador incremental (agregado por backend) \\
+\bottomrule
+\end{tabular}
+\setlength{\tabcolsep}{6pt}
+\normalsize
+\end{table}
+
+\section{Lineamientos QA/QC v0.1}
+Se propone un conjunto mínimo de controles para garantizar trazabilidad y calidad indicativa:
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item \textbf{Rangos físicos}: validar intervalos plausibles (p.ej., temperatura $-10$ a 60~$^\circ$C, humedad 0--100~\%HR, presión 800--1100~hPa, CO$_2$ 350--5000~ppm).
+  \item \textbf{Completitud}: porcentaje de registros válidos por sesión y por sensor.
+  \item \textbf{Consistencia temporal}: verificación de intervalos de muestreo y \emph{gaps}.
+  \item \textbf{Coherencia intersensor}: monitoreo del rango entre sensores para detectar deriva.
+  \item \textbf{Bitácora}: registrar reinicios, fallas de red, cambios de ubicación y calibraciones.
+\end{itemize}
+
+\section{Puesta en marcha y operación}
+\subsection*{Preparación}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item Conectar sensores según pines definidos.
+  \item Cargar firmware con \texttt{BACKEND\_URL} ajustada a la IP del PC.
+  \item Conectar el PC a la red Wi-Fi creada por el ESP32.
+\end{enumerate}
+
+\subsection*{Ejecución}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\RaggedRight
+  \item Iniciar el backend en el PC (puerto 3001).
+  \item Verificar \texttt{/api/status} y la interfaz web.
+  \item Observar flujo de datos en \texttt{mediciones.jsonl}.
+\end{enumerate}
+
+\subsection*{Limitaciones actuales}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+  \item Prototipo de interior, sin protección ambiental ni validación metrológica completa.
+  \item Sensores de bajo costo requieren calibración por co-ubicación para usos cuantitativos.
+  \item GPS puede no fijar posición en interiores.
+\end{itemize}
+
+\section{Conclusiones}
+El enfoque \textbf{muestral} reduce riesgos y crea capacidades técnicas y pedagógicas pertinentes a la \textbf{realidad hídrica y climática} de Coquimbo. La evidencia regional (megasequía, escasez hídrica, cobertura limitada de estaciones) y el \textbf{alto potencial solar} fundamentan la \textbf{viabilidad} y el \textbf{impacto formativo} para una futura red abierta y \textbf{escalable} por etapas.
+
+\section{Referencias}
+\small
+\raggedright
+\sloppy
+\begin{thebibliography}{99}
+
+\bibitem{CR2_site}
+CR2 — Centro de Ciencia del Clima y la Resiliencia. \textit{Informe a la Nación: La megasequía en Chile}. Disponible en: \url{https://www.cr2.cl/megasequia/}.
+
+\bibitem{CR2_2015}
+CR2 (2015). \textit{La megasequía 2010–2015: una lección para el futuro}. Disponible en: \url{https://www.cr2.cl/wp-content/uploads/2015/11/informe-megasequia-cr21.pdf}.
+
+\bibitem{DGA_decretos}
+Dirección General de Aguas (2025). \textit{Decretos de Escasez Hídrica}. Disponible en: \url{https://dga.mop.gob.cl/derechos-de-agua/proteccion-de-las-fuentes/decretos-de-escasez-2/}.
+
+\bibitem{BCN_Elqui2025}
+BCN (2025). \textit{Decreto MOP N°75/2025: prórroga de escasez hídrica, Provincia de Elqui}. Disponible en: \url{https://www.bcn.cl/leychile/Navegar?idNorma=1215707}.
+
+\bibitem{SINCA_portal}
+MMA (s.\,f.). \textit{SINCA — Sistema de Información Nacional de Calidad del Aire}. Disponible en: \url{https://sinca.mma.gob.cl/}.
+
+\bibitem{SINCA_LaSerena}
+MMA (s.\,f.). \textit{SINCA — Estación La Serena}. Disponible en: \url{https://sinca.mma.gob.cl/index.php/estacion/index/id/95}.
+
+\bibitem{GSA}
+World Bank Group (s.\,f.). \textit{Global Solar Atlas — Chile}. Disponible en: \url{https://globalsolaratlas.info/download/chile}.
+
+\bibitem{WHO_facts}
+World Health Organization (2024). \textit{Ambient air quality and health — Fact sheet}. Disponible en: \url{https://www.who.int/news-room/fact-sheets/detail/ambient-(outdoor)-air-quality-and-health}.
+
+\bibitem{SoGA2024}
+Health Effects Institute \& IHME (2024). \textit{State of Global Air 2024}. Disponible en: \url{https://www.healthdata.org/sites/default/files/2024-06/soga-2024-report.pdf}.
+
+\bibitem{Morawska2018}
+Morawska, L. et al. (2018). Applications of low-cost sensing technologies for air quality monitoring and exposure assessment. \textit{Atmospheric Environment}. OA: \url{https://pmc.ncbi.nlm.nih.gov/articles/PMC6145068/}.
+
+\bibitem{Karagulian2019}
+Karagulian, F. et al. (2019). Review of the Performance of Low-Cost Sensors for Air Quality Monitoring. \textit{Atmosphere}, 10(9):506. \url{https://www.mdpi.com/2073-4433/10/9/506}.
+
+\bibitem{Watne2021}
+Watne, \AA{}.K. et al. (2021). Tackling Data Quality When Using Low-Cost Air Quality Sensors in Citizen Science. \textit{Frontiers in Environmental Science}. \url{https://www.frontiersin.org/articles/10.3389/fenvs.2021.733634/full}.
+
+\bibitem{Giordano2021}
+Giordano, M.R. et al. (2021). From low-cost sensors to high-quality data: challenges and best practices for calibrating PM sensors. \textit{Preprint/Review}. \url{https://www.researchgate.net/publication/352956639_From_low-cost_sensors_to_high-quality_data}.
+
+\bibitem{SchoolAIR2023}
+Barros, N. et al. (2023). SchoolAIR: A Citizen Science IoT Framework Using Low-Cost Sensors in Schools. \textit{Sensors}, 24(1):148. \url{https://www.mdpi.com/1424-8220/24/1/148}.
+
+\bibitem{SmartCitizen}
+Smart Citizen (s.\,f.). \textit{Smart Citizen: plataforma abierta de monitoreo ambiental}. Disponible en: \url{https://smartcitizen.me/}. Consultado en: abril de 2024.
+
+\bibitem{EPA_AirSensorTools}
+U.S. Environmental Protection Agency (s.\,f.). \textit{Air Sensor Data Tools}. Disponible en: \url{https://www.epa.gov/air-sensor-toolbox/air-sensor-data-tools}. Consultado en: abril de 2024.
+
+\bibitem{OpenHardwareWilson}
+Parker, A., Dosemagen, S., Hoeberling, K., \& Novak, A. (2023). \textit{Open Science Hardware: A Shared Solution to Environmental Monitoring Challenges}. Science \& Technology Innovation Program, The Wilson Center. Disponible en: \url{https://www.wilsoncenter.org/sites/default/files/media/uploads/documents/STIP_230501%20Open%20Science%20Hardware%20V3.pdf}. Consultado en: abril de 2024.
+
+\bibitem{NASA_OpenHardware}
+Buytaert, W., Dussaillant, A., \& Aguilar, F. (2024). \textit{Leveraging open hardware for community-based monitoring, innovation, and capacity development}. AGU Fall Meeting Abstract. Disponible en: \url{https://ui.adsabs.harvard.edu/abs/2024AGUFMSY41E2609B/abstract}. Consultado en: abril de 2024.
+
+\bibitem{NDC_Chile}
+Ministerio del Medio Ambiente (2020). \textit{Contribución Determinada a Nivel Nacional (NDC) de Chile}. Disponible en: \url{https://mma.gob.cl/wp-content/uploads/2020/04/NDC_Chile_2020.pdf}.
+
+\bibitem{NCh2797_APL}
+Instituto Nacional de Normalizacion (2024). \textit{NCh2797:2024 Acuerdos de Produccion Limpia}. Norma tecnica chilena.
+
+\bibitem{ISO14040}
+International Organization for Standardization (2006). \textit{ISO 14040: Environmental management -- Life cycle assessment -- Principles and framework}.
+
+\bibitem{GHGProtocol}
+Greenhouse Gas Protocol (2011). \textit{Corporate Value Chain (Scope 3) Standard}. Disponible en: \url{https://ghgprotocol.org/standards/scope-3-standard}.
+
+\bibitem{WFN}
+Water Footprint Network (2011). \textit{The Water Footprint Assessment Manual}. Disponible en: \url{https://waterfootprint.org/en/resources/publications/water-footprint-assessment-manual/}.
+
+\bibitem{ISO9001}
+International Organization for Standardization (2015). \textit{ISO 9001: Quality management systems -- Requirements}.
+
+\bibitem{ISO14001}
+International Organization for Standardization (2015). \textit{ISO 14001: Environmental management systems -- Requirements with guidance for use}.
+
+\bibitem{ISO45001}
+International Organization for Standardization (2018). \textit{ISO 45001: Occupational health and safety management systems -- Requirements with guidance for use}.
+
+\bibitem{CodigoTrabajo}
+Biblioteca del Congreso Nacional (2003). \textit{DFL 1: Codigo del Trabajo}. Disponible en: \url{https://www.bcn.cl/leychile/navegar?idNorma=207436}.
+
+\bibitem{Ley16744}
+Biblioteca del Congreso Nacional (1968). \textit{Ley 16.744: Seguro Social contra Riesgos de Accidentes del Trabajo y Enfermedades Profesionales}. Disponible en: \url{https://www.bcn.cl/leychile/navegar?idNorma=28650}.
+
+\bibitem{Ley19300}
+Biblioteca del Congreso Nacional (1994). \textit{Ley 19.300: Bases Generales del Medio Ambiente}. Disponible en: \url{https://www.bcn.cl/leychile/navegar?idNorma=30667}.
+
+\bibitem{Ley21455}
+Biblioteca del Congreso Nacional (2022). \textit{Ley 21.455: Ley Marco de Cambio Climatico}. Disponible en: \url{https://www.bcn.cl/leychile/navegar?idNorma=1177091}.
+
+\bibitem{PARCC_site}
+Gobierno Regional de Coquimbo (s.\,f.). \textit{Plan de Accion Regional de Cambio Climatico (PARCC) Coquimbo}. Documento institucional.
+
+\bibitem{PARCC_acta}
+Gobierno Regional de Coquimbo (s.\,f.). \textit{Acta de avances y gobernanza del PARCC Coquimbo}. Documento institucional.
+
+\bibitem{PARCC_anteproy}
+Gobierno Regional de Coquimbo (s.\,f.). \textit{Anteproyecto del PARCC Coquimbo}. Documento institucional.
+
+\end{thebibliography}
+\fussy
+
+\end{document}

@@ -7,6 +7,7 @@ Ver tambien:
 - [backend/README.md](backend/README.md)
 - [firmware/README.md](firmware/README.md)
 - [diagramas/circuito.drawio](diagramas/circuito.drawio)
+- [diagramas/circuito.jpg](diagramas/circuito.jpg)
 
 ## 1) Componentes de hardware
 
@@ -31,6 +32,10 @@ Flujo de energia:
 Panel solar -> TP4056 -> Bateria -> Regulador -> ESP32-S3 -> Sensores.
 
 Diagrama editable: [diagramas/circuito.drawio](diagramas/circuito.drawio)
+
+Vista rapida del circuito:
+
+![Circuito del prototipo](diagramas/circuito.jpg)
 
 ## 3) Conexion y pines
 

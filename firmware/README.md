@@ -6,6 +6,7 @@ Ver tambien:
 - [manual-de-usuario.md](../manual-de-usuario.md)
 - [backend/README.md](../backend/README.md)
 - [diagramas/circuito.drawio](../diagramas/circuito.drawio)
+- [diagramas/circuito.jpg](../diagramas/circuito.jpg)
 
 ```mermaid
 flowchart TD

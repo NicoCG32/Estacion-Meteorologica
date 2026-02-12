@@ -2,6 +2,9 @@
 
 El informe esta en informe.tex y usa logos.sty y recursos en figuras/.
 
+Ver tambien:
+- [README.md](../README.md)
+
 ## Compilacion manual
 
 - pdflatex -jobname informe informe.tex

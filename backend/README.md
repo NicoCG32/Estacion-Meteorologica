@@ -2,6 +2,11 @@
 
 Este backend es el punto de encuentro entre la estacion y el usuario: recibe mediciones del ESP32, las guarda en un historico y expone una pagina web estatica para visualizarlas. Tambien provee una API simple para consultar el estado y los datos recientes.
 
+Ver tambien:
+- [manual-de-usuario.md](../manual-de-usuario.md)
+- [firmware/README.md](../firmware/README.md)
+- [diagramas/circuito.drawio](../diagramas/circuito.drawio)
+
 ```mermaid
 flowchart LR
     ESP32[ESP32-S3] -->|JSON por HTTP| API[Backend Node.js]
@@ -23,8 +28,18 @@ flowchart LR
 ## Ejecutar
 
 - npm install
-- npm start
+- npm run start:esp32
 - Abrir http://localhost:3001/
+
+Servidor de pruebas local:
+
+- npm run start:dev
+- Abrir http://localhost:3002/
+
+Scripts rapidos (Windows):
+
+- run-esp32.bat (instala dependencias si faltan y abre http://localhost:3001/)
+- run-dev.bat (instala dependencias si faltan y abre http://localhost:3002/)
 
 ## Estructura de carpetas
 
@@ -32,17 +47,27 @@ flowchart LR
 backend/
   data/
     mediciones.jsonl
-  public/
+  frontend/
     index.html
+    assets/
+      css/
+      js/
     img/
+  servers/
+    esp32.js
+    dev.js
+  src/
+    app.js
+  run-esp32.bat
+  run-dev.bat
   package.json
-  server.js
   README.md
 ```
 
 - data/: historico en formato JSONL, una medicion por linea.
-- public/: pagina estatica con la vista de datos.
-- server.js: servidor HTTP y API.
+- frontend/: pagina estatica con la vista de datos.
+- servers/: entradas del servidor (ESP32 y pruebas locales).
+- src/: logica compartida del backend.
 
 ## Datos
 
@@ -70,7 +95,10 @@ El backend agrega:
 - GET /api/mediciones
 - GET /api/mediciones?limit=60
 - GET /api/mediciones/ultimo
+- GET /api/mediciones/export?format=csv|jsonl&from=ISO&to=ISO
 - POST /api/mediciones
+
+Nota: el backend mantiene una ventana de mediciones en memoria para respuestas rapidas. El conteo total refleja todo lo guardado en JSONL.
 
 ## Ejemplos
 
@@ -92,6 +120,30 @@ Ultimas 60 mediciones:
 curl "http://localhost:3001/api/mediciones?limit=60"
 ```
 
+Exportar CSV (compatible con Excel):
+
+```bash
+curl -o mediciones.csv "http://localhost:3001/api/mediciones/export?format=csv"
+```
+
+Exportar CSV por rango de fechas (ISO 8601):
+
+```bash
+curl -o mediciones.csv "http://localhost:3001/api/mediciones/export?format=csv&from=2026-02-10T00:00:00Z&to=2026-02-10T23:59:59Z"
+```
+
+Exportar JSONL completo:
+
+```bash
+curl -o mediciones.jsonl "http://localhost:3001/api/mediciones/export?format=jsonl"
+```
+
+Exportar JSONL por rango de fechas (ISO 8601):
+
+```bash
+curl -o mediciones.jsonl "http://localhost:3001/api/mediciones/export?format=jsonl&from=2026-02-10T00:00:00Z&to=2026-02-10T23:59:59Z"
+```
+
 Enviar una medicion (el backend agrega id y timestamp):
 
 ```bash
@@ -103,7 +155,7 @@ curl -X POST http://localhost:3001/api/mediciones \
 Ejemplo de linea en JSONL (data/mediciones.jsonl):
 
 ```json
-{"id":"9c2e1e18","timestamp":"2026-02-10T18:40:12.532Z","temperatura_aire_celsius":24.3,"incertidumbre_temperatura_celsius":0.2,"humedad_aire_porcentaje":55.1,"incertidumbre_humedad_porcentaje":1.0,"presion_atmosferica_hPa":1012.4,"concentracion_CO2_ppm":580,"latitud_grados":-32.9,"longitud_grados":-60.7,"numero_satelites":7}
+{"id":128,"timestamp":"2026-02-10T18:40:12.532Z","temperatura_aire_celsius":24.3,"incertidumbre_temperatura_celsius":0.2,"humedad_aire_porcentaje":55.1,"incertidumbre_humedad_porcentaje":1.0,"presion_atmosferica_hPa":1012.4,"concentracion_CO2_ppm":580,"latitud_grados":-32.9,"longitud_grados":-60.7,"numero_satelites":7}
 ```
 
 ## FAQ

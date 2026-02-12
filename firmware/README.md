@@ -2,6 +2,11 @@
 
 Este firmware corre en el ESP32-S3 y es el encargado de obtener las mediciones fisicas. Lee los sensores, fusiona los valores y envia un JSON al backend a intervalos regulares.
 
+Ver tambien:
+- [manual-de-usuario.md](../manual-de-usuario.md)
+- [backend/README.md](../backend/README.md)
+- [diagramas/circuito.drawio](../diagramas/circuito.drawio)
+
 ```mermaid
 flowchart TD
     START[Inicio] --> INIT[Inicializar sensores]

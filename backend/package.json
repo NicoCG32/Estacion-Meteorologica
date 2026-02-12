@@ -1,10 +1,12 @@
 {
-  "name": "estacion-meteo-backend",
+  "name": "estacion-meteorologica-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "servers/esp32.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node servers/esp32.js",
+    "start:dev": "node servers/dev.js",
+    "start:esp32": "node servers/esp32.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

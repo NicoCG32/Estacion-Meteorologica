@@ -4,10 +4,11 @@ Proyecto universitario de una estacion meteorologica y de calidad del aire de ba
 
 ## Estructura
 
-- backend/: servidor Node.js, API y pagina web
-- firmware/: codigo del ESP32-S3 (Arduino)
-- docs/informe/: informe en LaTeX
-- manual-de-usuario.md: guia de uso para usuarios finales
+- [backend/](backend/): servidor Node.js, API y pagina web
+- [firmware/](firmware/): codigo del ESP32-S3 (Arduino)
+- [docs/informe/](docs/informe/): informe en LaTeX
+- [diagramas/](diagramas/): diagramas editables (drawio)
+- [manual-de-usuario.md](manual-de-usuario.md): guia de uso para usuarios finales
 
 ## Estructura del informe
 
@@ -19,19 +20,15 @@ Proyecto universitario de una estacion meteorologica y de calidad del aire de ba
 ## Inicio rapido
 
 1) Backend y pagina web
-- Ir a backend/
-- npm install
-- npm start
-- Abrir http://localhost:3001/
+- Ver [backend/README.md](backend/README.md)
 
 2) Firmware
-- Abrir firmware/EstacionMeteorologica.ino en Arduino IDE
-- Configurar pines y BACKEND_URL segun tu red
-- Cargar al ESP32-S3
+- Ver [firmware/README.md](firmware/README.md)
 
 ## Documentacion
 
-- manual-de-usuario.md: instrucciones completas (hardware, carga de datos y visualizacion)
-- backend/README.md: endpoints y formato de datos
-- firmware/README.md: cableado, sensores y configuracion
-- docs/informe/README.md: compilacion del informe
+- [manual-de-usuario.md](manual-de-usuario.md): instrucciones completas de uso
+- [backend/README.md](backend/README.md): endpoints, exportacion y ejecucion
+- [firmware/README.md](firmware/README.md): cableado, sensores y configuracion
+- [docs/README.md](docs/README.md): documentacion del informe
+- [diagramas/circuito.drawio](diagramas/circuito.drawio): circuito del prototipo

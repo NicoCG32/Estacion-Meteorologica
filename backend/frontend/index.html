@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8" />
+	<title>Estacion Meteorologica - Region de Coquimbo</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+	<div class="page">
+		<header class="hero">
+			<div class="hero-left">
+				<img src="img/estacion.png" alt="Logo Estacion Meteorologica" class="brand-logo" />
+				<div class="hero-copy">
+					<p class="eyebrow">Red meteorologica local</p>
+					<h1>Estacion Meteorologica - Region de Coquimbo</h1>
+					<p class="subtitle">Monitoreo local de temperatura, humedad, presion y CO2.</p>
+					<div class="hero-meta">
+						<span class="meta-item">Actualizacion cada 10 s</span>
+						<span class="meta-item">API REST + JSONL</span>
+					</div>
+				</div>
+			</div>
+			<div class="hero-right">
+				<img src="img/logo.png" alt="Logo Universidad" class="logo-main" />
+				<img src="img/ecin.png" alt="Logo ECIN" class="logo-ecin" />
+			</div>
+		</header>
+
+		<section class="grid-2">
+			<div class="card" id="estado-sensores">
+				<div class="card-header">
+					<h2>Estado de sensores</h2>
+					<span class="chip">GPS + Sensores</span>
+				</div>
+				<div class="sensor-list">
+					<div class="sensor-row">
+						<div class="sensor-name">BME280 (T, HR, P)</div>
+						<div class="sensor-state">
+							<span id="icon-bme" class="sensor-icon sensor-unknown">-</span>
+							<span id="estado-bme">Sin datos</span>
+						</div>
+					</div>
+					<div class="sensor-row">
+						<div class="sensor-name">SCD4x (CO2, T, HR)</div>
+						<div class="sensor-state">
+							<span id="icon-scd" class="sensor-icon sensor-unknown">-</span>
+							<span id="estado-scd">Sin datos</span>
+						</div>
+					</div>
+					<div class="sensor-row">
+						<div class="sensor-name">DHT22 (T, HR)</div>
+						<div class="sensor-state">
+							<span id="icon-dht" class="sensor-icon sensor-unknown">-</span>
+							<span id="estado-dht">Sin datos</span>
+						</div>
+					</div>
+					<div class="sensor-row">
+						<div class="sensor-name">GPS (posicion y satelites)</div>
+						<div class="sensor-state">
+							<span id="icon-gps" class="sensor-icon sensor-unknown">-</span>
+							<span id="estado-gps">Sin datos</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card" id="estado-servidor">
+				<div class="card-header">
+					<h2>Estado del servidor</h2>
+					<span class="chip">Backend activo</span>
+				</div>
+				<div class="stats">
+					<div class="stat">
+						<span class="stat-label">Estado</span>
+						<span class="stat-value" id="status-text">-</span>
+					</div>
+					<div class="stat">
+						<span class="stat-label">Mediciones totales</span>
+						<span class="stat-value" id="total-mediciones">0</span>
+					</div>
+					<div class="stat">
+						<span class="stat-label">Ventana en memoria</span>
+						<span class="stat-value" id="memoria-ventana">-</span>
+					</div>
+					<div class="stat">
+						<span class="stat-label">Ultima actualizacion</span>
+						<span class="stat-value" id="ultima-actualizacion">-</span>
+					</div>
+				</div>
+				<div class="card-actions">
+					<div class="export-controls">
+						<label class="export-field">
+							<span>Desde</span>
+							<input type="datetime-local" id="export-from" />
+						</label>
+						<label class="export-field">
+							<span>Hasta</span>
+							<input type="datetime-local" id="export-to" />
+						</label>
+					</div>
+					<div class="export-actions">
+						<a class="btn" id="export-csv" href="/api/mediciones/export?format=csv">Exportar CSV (Excel)</a>
+						<a class="btn btn-secondary" id="export-jsonl" href="/api/mediciones/export?format=jsonl">Exportar JSONL</a>
+						<button class="btn btn-ghost" id="export-clear" type="button">Limpiar fechas</button>
+					</div>
+					<span class="hint-inline" id="export-hint">Si no eliges fechas, descarga todo el historico.</span>
+					<span class="hint-inline hint-error" id="export-error" aria-live="polite"></span>
+				</div>
+			</div>
+		</section>
+
+		<section class="grid-2">
+			<div class="card">
+				<div class="card-header">
+					<h2>Ultima medicion oficial (promedio 1 min)</h2>
+					<span class="chip">Resumen</span>
+				</div>
+				<table class="data-table">
+					<tbody>
+						<tr><td class="label">Timestamp (servidor)</td><td class="value" id="last-ts">-</td></tr>
+						<tr><td class="label">Temperatura aire [C]</td><td class="value" id="last-temp">-</td></tr>
+						<tr><td class="label">Incertidumbre Temp [C]</td><td class="value" id="last-temp-incert">-</td></tr>
+						<tr><td class="label">Humedad aire [%]</td><td class="value" id="last-hum">-</td></tr>
+						<tr><td class="label">Incertidumbre Hum [%]</td><td class="value" id="last-hum-incert">-</td></tr>
+						<tr><td class="label">Presion atmosferica [hPa]</td><td class="value" id="last-pres">-</td></tr>
+						<tr><td class="label">CO2 [ppm]</td><td class="value" id="last-co2">-</td></tr>
+						<tr><td class="label">Latitud [deg]</td><td class="value" id="last-lat">-</td></tr>
+						<tr><td class="label">Longitud [deg]</td><td class="value" id="last-lon">-</td></tr>
+						<tr><td class="label">Numero de satelites</td><td class="value" id="last-sat">-</td></tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="card">
+				<div class="card-header">
+					<h2>JSON crudo de la ultima medicion</h2>
+					<span class="chip">Payload</span>
+				</div>
+				<pre id="last-json">{ }</pre>
+			</div>
+		</section>
+
+		<section class="charts-grid">
+			<div class="card">
+				<div class="chart-header">
+					<h2>Temperatura del aire vs tiempo</h2>
+					<span class="chart-tag">C</span>
+				</div>
+				<div id="chart-container-temp">
+					<canvas id="chartTemp"></canvas>
+				</div>
+				<p class="hint">Ultimos 60 puntos (minutos, si hay datos suficientes) de temperatura fusionada.</p>
+			</div>
+
+			<div class="card">
+				<div class="chart-header">
+					<h2>CO2 vs tiempo</h2>
+					<span class="chart-tag">ppm</span>
+				</div>
+				<div id="chart-container-co2">
+					<canvas id="chartCo2"></canvas>
+				</div>
+				<p class="hint">Ultimos 60 puntos de concentracion media de CO2.</p>
+			</div>
+
+			<div class="card">
+				<div class="chart-header">
+					<h2>Humedad relativa vs tiempo</h2>
+					<span class="chart-tag">% HR</span>
+				</div>
+				<div id="chart-container-hum">
+					<canvas id="chartHum"></canvas>
+				</div>
+				<p class="hint">Ultimos 60 puntos de humedad relativa fusionada.</p>
+			</div>
+
+			<div class="card">
+				<div class="chart-header">
+					<h2>Presion atmosferica vs tiempo</h2>
+					<span class="chart-tag">hPa</span>
+				</div>
+				<div id="chart-container-pres">
+					<canvas id="chartPres"></canvas>
+				</div>
+				<p class="hint">Ultimos 60 puntos de presion atmosferica media (BME280).</p>
+			</div>
+		</section>
+	</div>
+
+	<script src="assets/js/app.js"></script>
+</body>
+</html>

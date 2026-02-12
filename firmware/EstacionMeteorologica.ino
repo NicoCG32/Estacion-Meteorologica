@@ -10,21 +10,37 @@
 #include <HTTPClient.h>
 
 // =========================
-// Configuración Wi-Fi (ESP32 como Punto de Acceso) y backend
+// Configuracion (ajustar segun despliegue)
 // =========================
 
-// El ESP32 crea su propia red Wi-Fi:
+// Wi-Fi (ESP32 como Punto de Acceso) y backend
 const char* AP_SSID = "EstMeteo Proyecto IDS";     // Nombre de la red Wi-Fi creada por el ESP32
-const char* AP_PASS = "nota7IDS";       // Contraseña (mínimo 8 caracteres)
-
-// IMPORTANTE:
-// BACKEND_URL debe ser la IP del PC cuando está CONECTADO a esta red "MeteoESP32".
-// Por ejemplo, si al hacer `ipconfig` ves que tu PC tiene IPv4 = 192.168.4.2,
-// entonces aquí debe ir "http://192.168.4.2:3001/api/mediciones".
+const char* AP_PASS = "nota7IDS";                 // Contrasena (minimo 8 caracteres)
 const char* BACKEND_URL = "http://192.168.4.2:3001/api/mediciones";
 
+// Pines
+#define SDA_PIN   17
+#define SCL_PIN   18
 
-// Inicia el punto de acceso Wi-Fi del ESP32
+#define DHTPIN    7
+#define DHTTYPE   DHT22
+
+#define GPS_RX_PIN 40   // RX del ESP32-S3 (entrada desde TX del GPS)
+#define GPS_TX_PIN 41   // TX del ESP32-S3 (salida hacia RX del GPS)
+
+// Tiempos de medicion y agregacion
+const unsigned long INTERVALO_MEDIDA_MS = 2000;   // medir cada 2 segundos
+const unsigned long INTERVALO_JSON_MS   = 20000;  // generar JSON cada 20 segundos
+const unsigned long DELAY_INICIAL_MS   = 10000;  // espera inicial antes de medir
+
+// Filtro de cambios bruscos (firmware)
+const float UMBRAL_TEMP_C = 5.0f;
+const float UMBRAL_HUM_PORC = 15.0f;
+const float UMBRAL_PRES_HPA = 5.0f;
+const float UMBRAL_CO2_PPM = 400.0f;
+
+
+// Inicia el punto de acceso Wi-Fi del ESP32 (modo AP)
 void iniciarPuntoDeAcceso() {
   static bool ap_inicializado = false;
   if (ap_inicializado) return;  // Evita re-inicializar
@@ -80,18 +96,6 @@ void enviarMedicionJSON(const String& json) {
 }
 
 // =========================
-// Configuración de pines
-// =========================
-#define SDA_PIN   17
-#define SCL_PIN   18
-
-#define DHTPIN    7
-#define DHTTYPE   DHT22
-
-#define GPS_RX_PIN 40   // RX del ESP32-S3 (entrada desde TX del GPS)
-#define GPS_TX_PIN 41   // TX del ESP32-S3 (salida hacia RX del GPS)
-
-// =========================
 // Macro de error del sensor SCD4x
 // =========================
 #ifdef NO_ERROR
@@ -111,6 +115,9 @@ TinyGPSPlus gps;
 static char errorMessage[64];
 static int16_t error;
 
+// =========================
+// Estado y buffers
+// =========================
 // Flags de estado de sensores
 bool bme_ok = false;
 bool dht_ok = false;
@@ -118,11 +125,9 @@ bool scd_ok = false;
 bool gps_ok = false;
 
 // =========================
-// Tiempos de medición y agregación
+// Tiempos de medicion y agregacion
 // =========================
 bool first = true;
-const unsigned long INTERVALO_MEDIDA_MS = 2000;   // medir cada 2 segundos
-const unsigned long INTERVALO_JSON_MS   = 20000;  // generar JSON cada 20 segundos
 
 unsigned long ultimoTiempoMedida = 0;
 unsigned long ultimoTiempoJSON   = 0;
@@ -161,8 +166,17 @@ int    conteo_latlon = 0;
 long   suma_sat   = 0;
 int    conteo_sat = 0;
 
-// Variable global para almacenar el último JSON generado
+// Variable global para almacenar el ultimo JSON generado
 String ultimoJSON = "";
+
+// =========================
+// Estado del filtro de cambios bruscos
+// =========================
+bool tieneUltimaValida = false;
+float ultima_temp = NAN;
+float ultima_hum = NAN;
+float ultima_pres = NAN;
+uint16_t ultima_co2 = 0;
 
 // Prototipos de funciones
 void autoTestSensores();
@@ -182,6 +196,10 @@ String guardarJSON(float temp_fusion, float hum_fusion, float pres_bme,
                    uint16_t co2_ppm, double lat, double lon, int sat,
                    float incert_temp, float incert_hum);
 
+// =========================
+// Funciones de utilidad
+// =========================
+
 void resetAcumuladoresMinuto() {
   // BME280
   suma_temp_bme = suma_hum_bme = suma_pres_bme = 0.0f;
@@ -198,6 +216,433 @@ void resetAcumuladoresMinuto() {
   conteo_latlon = 0;
   suma_sat = 0;
   conteo_sat = 0;
+}
+
+bool esValorValido(float v) {
+  return !isnan(v);
+}
+
+// =========================
+// Detección de cambios bruscos
+// =========================
+
+bool esSospechosa(float temp, float hum, float pres, uint16_t co2, String& motivos) {
+  if (!tieneUltimaValida) {
+    return false;
+  }
+
+  bool sospechosa = false;
+
+  if (esValorValido(temp) && esValorValido(ultima_temp)) {
+    float delta = fabs(temp - ultima_temp);
+    if (delta >= UMBRAL_TEMP_C) {
+      sospechosa = true;
+      motivos += "Temp ";
+      motivos += delta;
+      motivos += "C; ";
+    }
+  }
+
+  if (esValorValido(hum) && esValorValido(ultima_hum)) {
+    float delta = fabs(hum - ultima_hum);
+    if (delta >= UMBRAL_HUM_PORC) {
+      sospechosa = true;
+      motivos += "Hum ";
+      motivos += delta;
+      motivos += "%; ";
+    }
+  }
+
+  if (esValorValido(pres) && esValorValido(ultima_pres)) {
+    float delta = fabs(pres - ultima_pres);
+    if (delta >= UMBRAL_PRES_HPA) {
+      sospechosa = true;
+      motivos += "Pres ";
+      motivos += delta;
+      motivos += "hPa; ";
+    }
+  }
+
+  if (co2 > 0 && ultima_co2 > 0) {
+    float delta = fabs((float)co2 - (float)ultima_co2);
+    if (delta >= UMBRAL_CO2_PPM) {
+      sospechosa = true;
+      motivos += "CO2 ";
+      motivos += delta;
+      motivos += "ppm; ";
+    }
+  }
+
+  return sospechosa;
+}
+
+// =========================
+// Salida en serie (diagnóstico)
+// =========================
+
+void imprimirResumenMinuto(float temp, float hum, float pres, uint16_t co2,
+                           double lat, double lon, int sat,
+                           float incert_temp, float incert_hum,
+                           const String& json) {
+  Serial.println("====================================================");
+  Serial.println("RESUMEN DEL ÚLTIMO MINUTO (VALORES OFICIALES):");
+
+  Serial.print("Temperatura del aire (fusionada): ");
+  if (isnan(temp)) {
+    Serial.print("NaN");
+  } else {
+    Serial.print(temp, 2);
+    Serial.print(" C");
+    if (!isnan(incert_temp)) {
+      Serial.print(" (±");
+      Serial.print(incert_temp, 2);
+      Serial.print(" C)");
+    }
+  }
+  Serial.println();
+
+  Serial.print("Humedad relativa del aire (fusionada): ");
+  if (isnan(hum)) {
+    Serial.print("NaN");
+  } else {
+    Serial.print(hum, 1);
+    Serial.print(" %");
+    if (!isnan(incert_hum)) {
+      Serial.print(" (±");
+      Serial.print(incert_hum, 1);
+      Serial.print(" %)");
+    }
+  }
+  Serial.println();
+
+  Serial.print("Presión atmosférica media (BME280): ");
+  if (isnan(pres)) {
+    Serial.println("NaN");
+  } else {
+    Serial.print(pres, 1);
+    Serial.println(" hPa");
+  }
+
+  Serial.print("Concentración media de CO2 (SCD4x): ");
+  Serial.print(co2);
+  Serial.println(" ppm");
+
+  Serial.print("Posición media GPS -> Latitud: ");
+  if (isnan(lat)) Serial.print("NaN"); else Serial.print(lat, 6);
+  Serial.print(", Longitud: ");
+  if (isnan(lon)) Serial.print("NaN"); else Serial.print(lon, 6);
+  Serial.print(", Número medio de satélites: ");
+  Serial.println(sat);
+
+  Serial.println("JSON generado (promedios de 1 minuto, listo para ser enviado a una API web):");
+  Serial.println(json);
+  Serial.println("====================================================\n");
+}
+
+struct LecturasInstantaneas {
+  float temperatura_bme;
+  float humedad_bme;
+  float presion_bme;
+  float temperatura_dht;
+  float humedad_dht;
+  uint16_t co2_ppm;
+  float temperatura_scd;
+  float humedad_scd;
+  double latitud;
+  double longitud;
+  int numero_satelites;
+  float temperatura_fusionada_inst;
+  float humedad_fusionada_inst;
+  float incert_temp_inst;
+  float incert_hum_inst;
+};
+
+// =========================
+// Procesamiento cíclico (cada ciclo de medición)
+// =========================
+
+void procesarMedicionInstantanea(unsigned long ahora) {
+  LecturasInstantaneas lect;
+  lect.temperatura_bme = NAN;
+  lect.humedad_bme = NAN;
+  lect.presion_bme = NAN;
+  lect.temperatura_dht = NAN;
+  lect.humedad_dht = NAN;
+  lect.co2_ppm = 0;
+  lect.temperatura_scd = NAN;
+  lect.humedad_scd = NAN;
+  lect.latitud = NAN;
+  lect.longitud = NAN;
+  lect.numero_satelites = 0;
+  lect.temperatura_fusionada_inst = NAN;
+  lect.humedad_fusionada_inst = NAN;
+  lect.incert_temp_inst = NAN;
+  lect.incert_hum_inst = NAN;
+
+  // ----- Lectura del BME280 -----
+  if (bme_ok) {
+    lect.temperatura_bme = bme.readTemperature();        // °C
+    lect.humedad_bme     = bme.readHumidity();           // %
+    lect.presion_bme     = bme.readPressure() / 100.0F;  // hPa
+  }
+
+  // ----- Lectura del DHT22 -----
+  lect.temperatura_dht = dht.readTemperature(); // °C
+  lect.humedad_dht     = dht.readHumidity();    // %
+
+  if (isnan(lect.temperatura_dht) || isnan(lect.humedad_dht)) {
+    Serial.println("Advertencia: lectura no válida del sensor DHT22.");
+  }
+
+  // ----- Lectura del SCD4x -----
+  if (scd_ok) {
+    bool datos_listos = false;
+    error = scd4x.getDataReadyStatus(datos_listos);
+    if (error != NO_ERROR) {
+      Serial.print("Error al consultar estado de datos del SCD4x: ");
+      errorToString(error, errorMessage, sizeof errorMessage);
+      Serial.println(errorMessage);
+    }
+
+    if (datos_listos) {
+      error = scd4x.readMeasurement(lect.co2_ppm, lect.temperatura_scd, lect.humedad_scd);
+      if (error != NO_ERROR) {
+        Serial.print("Error al leer la medición del SCD4x: ");
+        errorToString(error, errorMessage, sizeof errorMessage);
+        Serial.println(errorMessage);
+      }
+    }
+  }
+
+  // ----- Lectura del GPS -----
+  if (gps.location.isValid()) {
+    lect.latitud  = gps.location.lat();
+    lect.longitud = gps.location.lng();
+  }
+  if (gps.satellites.isValid()) {
+    lect.numero_satelites = gps.satellites.value();
+  }
+
+  fusionarTemperatura(
+    lect.temperatura_bme, bme_ok && !isnan(lect.temperatura_bme),
+    lect.temperatura_dht, !isnan(lect.temperatura_dht),
+    lect.temperatura_scd, scd_ok && !isnan(lect.temperatura_scd),
+    &lect.temperatura_fusionada_inst, &lect.incert_temp_inst
+  );
+
+  fusionarHumedad(
+    lect.humedad_bme, bme_ok && !isnan(lect.humedad_bme),
+    lect.humedad_dht, !isnan(lect.humedad_dht),
+    lect.humedad_scd, scd_ok && !isnan(lect.humedad_scd),
+    &lect.humedad_fusionada_inst, &lect.incert_hum_inst
+  );
+
+  if (bme_ok && !isnan(lect.temperatura_bme)) {
+    suma_temp_bme += lect.temperatura_bme;
+    conteo_temp_bme++;
+  }
+  if (bme_ok && !isnan(lect.humedad_bme)) {
+    suma_hum_bme += lect.humedad_bme;
+    conteo_hum_bme++;
+  }
+  if (bme_ok && !isnan(lect.presion_bme)) {
+    suma_pres_bme += lect.presion_bme;
+    conteo_pres_bme++;
+  }
+
+  if (!isnan(lect.temperatura_dht)) {
+    suma_temp_dht += lect.temperatura_dht;
+    conteo_temp_dht++;
+  }
+  if (!isnan(lect.humedad_dht)) {
+    suma_hum_dht += lect.humedad_dht;
+    conteo_hum_dht++;
+  }
+
+  if (scd_ok && !isnan(lect.temperatura_scd)) {
+    suma_temp_scd += lect.temperatura_scd;
+    conteo_temp_scd++;
+  }
+  if (scd_ok && !isnan(lect.humedad_scd)) {
+    suma_hum_scd += lect.humedad_scd;
+    conteo_hum_scd++;
+  }
+  if (scd_ok && lect.co2_ppm > 0) {
+    suma_co2 += lect.co2_ppm;
+    conteo_co2++;
+  }
+
+  if (!isnan(lect.latitud) && !isnan(lect.longitud)) {
+    suma_lat += lect.latitud;
+    suma_lon += lect.longitud;
+    conteo_latlon++;
+  }
+  if (lect.numero_satelites > 0) {
+    suma_sat += lect.numero_satelites;
+    conteo_sat++;
+  }
+
+  Serial.println("----------------------------------------------------");
+  Serial.print("Tiempo de ejecución [ms]: ");
+  Serial.println(ahora);
+
+  Serial.print("BME280 -> ");
+  if (bme_ok) {
+    Serial.print("Temperatura: "); Serial.print(lect.temperatura_bme, 2); Serial.print(" °C, ");
+    Serial.print("Humedad relativa: "); Serial.print(lect.humedad_bme, 1); Serial.print(" %, ");
+    Serial.print("Presión atmosférica: "); Serial.print(lect.presion_bme, 1); Serial.println(" hPa");
+  } else {
+    Serial.println("SIN DATOS (sensor BME280 no inicializado correctamente).");
+  }
+
+  Serial.print("DHT22  -> ");
+  Serial.print("Temperatura: "); Serial.print(lect.temperatura_dht, 2); Serial.print(" °C, ");
+  Serial.print("Humedad relativa: "); Serial.print(lect.humedad_dht, 1); Serial.println(" %");
+
+  Serial.print("SCD4x  -> ");
+  if (scd_ok) {
+    Serial.print("Concentración de CO2: "); Serial.print(lect.co2_ppm); Serial.print(" ppm, ");
+    Serial.print("Temperatura: "); Serial.print(lect.temperatura_scd, 2); Serial.print(" °C, ");
+    Serial.print("Humedad relativa: "); Serial.print(lect.humedad_scd, 1); Serial.println(" %");
+  } else {
+    Serial.println("SIN DATOS (sensor SCD4x no inicializado correctamente).");
+  }
+
+  Serial.print("GPS    -> ");
+  Serial.print("Latitud: ");
+  if (isnan(lect.latitud)) Serial.print("NaN"); else Serial.print(lect.latitud, 6);
+  Serial.print(", Longitud: ");
+  if (isnan(lect.longitud)) Serial.print("NaN"); else Serial.print(lect.longitud, 6);
+  Serial.print(", Número de satélites: "); Serial.println(lect.numero_satelites);
+
+  Serial.print("VALORES FUSIONADOS INSTANTÁNEOS -> Temperatura del aire: ");
+  if (isnan(lect.temperatura_fusionada_inst)) {
+    Serial.print("NaN");
+  } else {
+    Serial.print(lect.temperatura_fusionada_inst, 2);
+    Serial.print(" °C");
+    if (!isnan(lect.incert_temp_inst)) {
+      Serial.print(" (±");
+      Serial.print(lect.incert_temp_inst, 2);
+      Serial.print(" °C)");
+    }
+  }
+
+  Serial.print(", Humedad relativa del aire: ");
+  if (isnan(lect.humedad_fusionada_inst)) {
+    Serial.print("NaN");
+  } else {
+    Serial.print(lect.humedad_fusionada_inst, 1);
+    Serial.print(" %");
+    if (!isnan(lect.incert_hum_inst)) {
+      Serial.print(" (±");
+      Serial.print(lect.incert_hum_inst, 1);
+      Serial.print(" %)");
+    }
+  }
+  Serial.println();
+}
+
+// =========================
+// Agregación mensual (cada minuto)
+// =========================
+
+void procesarMinuto() {
+  // Cálculo de promedios por sensor
+  float prom_temp_bme = (conteo_temp_bme > 0) ? (suma_temp_bme / conteo_temp_bme) : NAN;
+  float prom_hum_bme  = (conteo_hum_bme  > 0) ? (suma_hum_bme  / conteo_hum_bme)  : NAN;
+  float prom_pres_bme = (conteo_pres_bme > 0) ? (suma_pres_bme / conteo_pres_bme) : NAN;
+
+  float prom_temp_dht = (conteo_temp_dht > 0) ? (suma_temp_dht / conteo_temp_dht) : NAN;
+  float prom_hum_dht  = (conteo_hum_dht  > 0) ? (suma_hum_dht  / conteo_hum_dht)  : NAN;
+
+  float prom_temp_scd = (conteo_temp_scd > 0) ? (suma_temp_scd / conteo_temp_scd) : NAN;
+  float prom_hum_scd  = (conteo_hum_scd  > 0) ? (suma_hum_scd  / conteo_hum_scd)  : NAN;
+  float prom_co2      = (conteo_co2      > 0) ? ((float)suma_co2 / conteo_co2)    : 0.0f;
+
+  double prom_lat = (conteo_latlon > 0) ? (suma_lat / conteo_latlon) : NAN;
+  double prom_lon = (conteo_latlon > 0) ? (suma_lon / conteo_latlon) : NAN;
+  int prom_sat    = (conteo_sat    > 0) ? (int)((float)suma_sat / conteo_sat + 0.5f) : 0;
+
+  // Fusión por minuto
+  float temperatura_fusionada_min     = NAN;
+  float humedad_fusionada_min         = NAN;
+  float incertidumbre_temperatura_min = NAN;
+  float incertidumbre_humedad_min     = NAN;
+
+  fusionarTemperatura(
+    prom_temp_bme, bme_ok && !isnan(prom_temp_bme),
+    prom_temp_dht, !isnan(prom_temp_dht),
+    prom_temp_scd, scd_ok && !isnan(prom_temp_scd),
+    &temperatura_fusionada_min, &incertidumbre_temperatura_min
+  );
+
+  fusionarHumedad(
+    prom_hum_bme, bme_ok && !isnan(prom_hum_bme),
+    prom_hum_dht, !isnan(prom_hum_dht),
+    prom_hum_scd, scd_ok && !isnan(prom_hum_scd),
+    &humedad_fusionada_min, &incertidumbre_humedad_min
+  );
+
+  // Generación del JSON con valores únicos y fusionados
+  uint16_t co2_promedio_ppm = (uint16_t)(prom_co2 + 0.5f); // redondeo simple
+
+  String motivosSospecha = "";
+  bool sospechosa = esSospechosa(
+    temperatura_fusionada_min,
+    humedad_fusionada_min,
+    prom_pres_bme,
+    co2_promedio_ppm,
+    motivosSospecha
+  );
+
+  if (sospechosa) {
+    Serial.println("AVISO: cambio brusco detectado, medicion descartada en firmware.");
+    Serial.print("Motivos: ");
+    Serial.println(motivosSospecha);
+    resetAcumuladoresMinuto();
+  } else {
+    ultimoJSON = guardarJSON(
+      temperatura_fusionada_min,
+      humedad_fusionada_min,
+      prom_pres_bme,
+      co2_promedio_ppm,
+      prom_lat,
+      prom_lon,
+      prom_sat,
+      incertidumbre_temperatura_min,
+      incertidumbre_humedad_min
+    );
+
+    // Enviar al backend
+    enviarMedicionJSON(ultimoJSON);
+
+    // Actualizar ultima medicion valida
+    tieneUltimaValida = true;
+    ultima_temp = temperatura_fusionada_min;
+    ultima_hum = humedad_fusionada_min;
+    ultima_pres = prom_pres_bme;
+    ultima_co2 = co2_promedio_ppm;
+  }
+
+  if (!sospechosa) {
+    // Salida de resumen del ultimo minuto
+    imprimirResumenMinuto(
+      temperatura_fusionada_min,
+      humedad_fusionada_min,
+      prom_pres_bme,
+      co2_promedio_ppm,
+      prom_lat,
+      prom_lon,
+      prom_sat,
+      incertidumbre_temperatura_min,
+      incertidumbre_humedad_min,
+      ultimoJSON
+    );
+  }
+
+  // Reset de acumuladores para el siguiente minuto
+  resetAcumuladoresMinuto();
 }
 
 void setup() {
@@ -229,59 +674,9 @@ void setup() {
   }
 
   // =========================
-  // Inicialización del SCD4x (CO₂, temperatura, humedad)
+  // Inicialización del SCD4x
   // =========================
-  Serial.println("Inicializando sensor SCD4x (CO2, temperatura, humedad)...");
-  scd4x.begin(Wire, SCD41_I2C_ADDR_62);
-  delay(30);
-
-  // Llevar el sensor a un estado conocido
-  error = scd4x.wakeUp();
-  if (error != NO_ERROR) {
-    Serial.print("Error al ejecutar wakeUp() en SCD4x: ");
-    errorToString(error, errorMessage, sizeof errorMessage);
-    Serial.println(errorMessage);
-  }
-
-  error = scd4x.stopPeriodicMeasurement();
-  if (error != NO_ERROR) {
-    Serial.print("Error al ejecutar stopPeriodicMeasurement() en SCD4x: ");
-    errorToString(error, errorMessage, sizeof errorMessage);
-    Serial.println(errorMessage);
-  }
-
-  error = scd4x.reinit();
-  if (error != NO_ERROR) {
-    Serial.print("Error al ejecutar reinit() en SCD4x: ");
-    errorToString(error, errorMessage, sizeof errorMessage);
-    Serial.println(errorMessage);
-  }
-
-  // Lectura opcional del número de serie del SCD4x
-  uint64_t serialNumber = 0;
-  error = scd4x.getSerialNumber(serialNumber);
-  if (error != NO_ERROR) {
-    Serial.print("Error al obtener el número de serie del SCD4x: ");
-    errorToString(error, errorMessage, sizeof errorMessage);
-    Serial.println(errorMessage);
-  } else {
-    Serial.print("Número de serie del SCD4x: 0x");
-    Serial.print((uint32_t)(serialNumber >> 32), HEX);
-    Serial.print((uint32_t)(serialNumber & 0xFFFFFFFF), HEX);
-    Serial.println();
-  }
-
-  // Comenzar mediciones periódicas del SCD4x (intervalo aproximado de 5 segundos)
-  error = scd4x.startPeriodicMeasurement();
-  if (error != NO_ERROR) {
-    Serial.print("Error al iniciar la medición periódica del SCD4x: ");
-    errorToString(error, errorMessage, sizeof errorMessage);
-    Serial.println(errorMessage);
-    scd_ok = false;
-  } else {
-    Serial.println("SCD4x inicializado correctamente en modo de medición periódica.");
-    scd_ok = true;
-  }
+  inicializarSCD4x();
 
   // =========================
   // Inicialización del GPS
@@ -300,7 +695,7 @@ void setup() {
   // Wi-Fi en modo Punto de Acceso
   iniciarPuntoDeAcceso();
 
-  Serial.println("\nInicio del bucle principal. Se realizarán mediciones cada 5 segundos y se generará un dato oficial cada 60 segundos.\n");
+  Serial.println("\nInicio del bucle principal. Se realizaran mediciones cada 2 segundos y se generara un dato oficial cada 20 segundos.\n");
 }
 
 void autoTestSensores() {
@@ -355,9 +750,51 @@ void leerGPSContinuo() {
   }
 }
 
-// ---------------------------------------------------------
+void inicializarSCD4x() {
+  Serial.println("Inicializando sensor SCD4x (CO2, temperatura, humedad)...");
+  scd4x.begin(Wire, SCD41_I2C_ADDR_62);
+  delay(30);
+
+  // Llevar el sensor a un estado conocido
+  error = scd4x.wakeUp();
+  if (error != NO_ERROR) {
+    Serial.print("Error al ejecutar wakeUp() en SCD4x: ");
+    errorToString(error, errorMessage, sizeof errorMessage);
+    Serial.println(errorMessage);
+  }
+
+  error = scd4x.stopPeriodicMeasurement();
+  if (error != NO_ERROR) {
+    Serial.print("Error al ejecutar stopPeriodicMeasurement() en SCD4x: ");
+    errorToString(error, errorMessage, sizeof errorMessage);
+    Serial.println(errorMessage);
+  }
+
+  error = scd4x.reinit();
+  if (error != NO_ERROR) {
+    Serial.print("Error al ejecutar reinit() en SCD4x: ");
+    errorToString(error, errorMessage, sizeof errorMessage);
+    Serial.println(errorMessage);
+  }
+
+  // Comenzar mediciones periódicas del SCD4x (intervalo aproximado de 5 segundos)
+  error = scd4x.startPeriodicMeasurement();
+  if (error != NO_ERROR) {
+    Serial.print("Error al iniciar la medición periódica del SCD4x: ");
+    errorToString(error, errorMessage, sizeof errorMessage);
+    Serial.println(errorMessage);
+    scd_ok = false;
+  } else {
+    Serial.println("SCD4x inicializado correctamente en modo de medición periódica.");
+    scd_ok = true;
+  }
+}
+
+// =========================
+// Fusión de sensores
+// =========================
+
 // Función de fusión de TEMPERATURA (3 sensores -> 1 valor)
-// ---------------------------------------------------------
 void fusionarTemperatura(float t_bme, bool t_bme_ok,
                          float t_dht, bool t_dht_ok,
                          float t_scd, bool t_scd_ok,
@@ -435,9 +872,7 @@ void fusionarTemperatura(float t_bme, bool t_bme_ok,
   }
 }
 
-// ---------------------------------------------------------
 // Función de fusión de HUMEDAD (3 sensores -> 1 valor)
-// ---------------------------------------------------------
 void fusionarHumedad(float h_bme, bool h_bme_ok,
                      float h_dht, bool h_dht_ok,
                      float h_scd, bool h_scd_ok,
@@ -519,201 +954,15 @@ void loop() {
   unsigned long ahora = millis();
 
   // =========================
-  // BLOQUE 1: medición cada 5 segundos
+  // BLOQUE 1: medicion cada INTERVALO_MEDIDA_MS
   // =========================
-  if (first){
-    delay(10000);
+  if (first) {
+    delay(DELAY_INICIAL_MS);
     first = false;
   } else {
     if (ahora - ultimoTiempoMedida >= INTERVALO_MEDIDA_MS) {
       ultimoTiempoMedida = ahora;
-
-      // ----- Lectura del BME280 -----
-      float temperatura_bme = NAN;
-      float humedad_bme     = NAN;
-      float presion_bme     = NAN;
-
-      if (bme_ok) {
-        temperatura_bme = bme.readTemperature();        // °C
-        humedad_bme     = bme.readHumidity();           // %
-        presion_bme     = bme.readPressure() / 100.0F;  // hPa
-      }
-
-      // ----- Lectura del DHT22 -----
-      float temperatura_dht = dht.readTemperature(); // °C
-      float humedad_dht     = dht.readHumidity();    // %
-
-      if (isnan(temperatura_dht) || isnan(humedad_dht)) {
-        Serial.println("Advertencia: lectura no válida del sensor DHT22.");
-      }
-
-      // ----- Lectura del SCD4x -----
-      uint16_t co2_ppm       = 0;
-      float temperatura_scd  = NAN;
-      float humedad_scd      = NAN;
-
-      if (scd_ok) {
-        bool datos_listos = false;
-        error = scd4x.getDataReadyStatus(datos_listos);
-        if (error != NO_ERROR) {
-          Serial.print("Error al consultar estado de datos del SCD4x: ");
-          errorToString(error, errorMessage, sizeof errorMessage);
-          Serial.println(errorMessage);
-        }
-
-        if (datos_listos) {
-          error = scd4x.readMeasurement(co2_ppm, temperatura_scd, humedad_scd);
-          if (error != NO_ERROR) {
-            Serial.print("Error al leer la medición del SCD4x: ");
-            errorToString(error, errorMessage, sizeof errorMessage);
-            Serial.println(errorMessage);
-          }
-        }
-      }
-
-      // ----- Lectura del GPS -----
-      double latitud  = 0.0;
-      double longitud = 0.0;
-      int numero_satelites = 0;
-
-      if (gps.location.isValid()) {
-        latitud  = gps.location.lat();
-        longitud = gps.location.lng();
-      } else {
-        latitud  = NAN;
-        longitud = NAN;
-      }
-
-      if (gps.satellites.isValid()) {
-        numero_satelites = gps.satellites.value();
-      }
-
-      // ----- Fusión instantánea (sólo para diagnóstico en consola) -----
-      float temperatura_fusionada_inst = NAN;
-      float humedad_fusionada_inst     = NAN;
-      float incert_temp_inst           = NAN;
-      float incert_hum_inst            = NAN;
-
-      fusionarTemperatura(
-        temperatura_bme, bme_ok && !isnan(temperatura_bme),
-        temperatura_dht, !isnan(temperatura_dht),
-        temperatura_scd, scd_ok && !isnan(temperatura_scd),
-        &temperatura_fusionada_inst, &incert_temp_inst
-      );
-
-      fusionarHumedad(
-        humedad_bme, bme_ok && !isnan(humedad_bme),
-        humedad_dht, !isnan(humedad_dht),
-        humedad_scd, scd_ok && !isnan(humedad_scd),
-        &humedad_fusionada_inst, &incert_hum_inst
-      );
-
-      // ----- Acumulación para el promedio de 1 minuto -----
-      if (bme_ok && !isnan(temperatura_bme)) {
-        suma_temp_bme += temperatura_bme;
-        conteo_temp_bme++;
-      }
-      if (bme_ok && !isnan(humedad_bme)) {
-        suma_hum_bme += humedad_bme;
-        conteo_hum_bme++;
-      }
-      if (bme_ok && !isnan(presion_bme)) {
-        suma_pres_bme += presion_bme;
-        conteo_pres_bme++;
-      }
-
-      if (!isnan(temperatura_dht)) {
-        suma_temp_dht += temperatura_dht;
-        conteo_temp_dht++;
-      }
-      if (!isnan(humedad_dht)) {
-        suma_hum_dht += humedad_dht;
-        conteo_hum_dht++;
-      }
-
-      if (scd_ok && !isnan(temperatura_scd)) {
-        suma_temp_scd += temperatura_scd;
-        conteo_temp_scd++;
-      }
-      if (scd_ok && !isnan(humedad_scd)) {
-        suma_hum_scd += humedad_scd;
-        conteo_hum_scd++;
-      }
-      if (scd_ok && co2_ppm > 0) {
-        suma_co2 += co2_ppm;
-        conteo_co2++;
-      }
-
-      if (!isnan(latitud) && !isnan(longitud)) {
-        suma_lat += latitud;
-        suma_lon += longitud;
-        conteo_latlon++;
-      }
-      if (numero_satelites > 0) {
-        suma_sat += numero_satelites;
-        conteo_sat++;
-      }
-
-      // ----- Salida legible instantánea (para observación en tiempo real) -----
-      Serial.println("----------------------------------------------------");
-      Serial.print("Tiempo de ejecución [ms]: ");
-      Serial.println(ahora);
-
-      Serial.print("BME280 -> ");
-      if (bme_ok) {
-        Serial.print("Temperatura: "); Serial.print(temperatura_bme, 2); Serial.print(" °C, ");
-        Serial.print("Humedad relativa: "); Serial.print(humedad_bme, 1); Serial.print(" %, ");
-        Serial.print("Presión atmosférica: "); Serial.print(presion_bme, 1); Serial.println(" hPa");
-      } else {
-        Serial.println("SIN DATOS (sensor BME280 no inicializado correctamente).");
-      }
-
-      Serial.print("DHT22  -> ");
-      Serial.print("Temperatura: "); Serial.print(temperatura_dht, 2); Serial.print(" °C, ");
-      Serial.print("Humedad relativa: "); Serial.print(humedad_dht, 1); Serial.println(" %");
-
-      Serial.print("SCD4x  -> ");
-      if (scd_ok) {
-        Serial.print("Concentración de CO2: "); Serial.print(co2_ppm); Serial.print(" ppm, ");
-        Serial.print("Temperatura: "); Serial.print(temperatura_scd, 2); Serial.print(" °C, ");
-        Serial.print("Humedad relativa: "); Serial.print(humedad_scd, 1); Serial.println(" %");
-      } else {
-        Serial.println("SIN DATOS (sensor SCD4x no inicializado correctamente).");
-      }
-
-      Serial.print("GPS    -> ");
-      Serial.print("Latitud: ");
-      if (isnan(latitud)) Serial.print("NaN"); else Serial.print(latitud, 6);
-      Serial.print(", Longitud: ");
-      if (isnan(longitud)) Serial.print("NaN"); else Serial.print(longitud, 6);
-      Serial.print(", Número de satélites: "); Serial.println(numero_satelites);
-
-      Serial.print("VALORES FUSIONADOS INSTANTÁNEOS -> Temperatura del aire: ");
-      if (isnan(temperatura_fusionada_inst)) {
-        Serial.print("NaN");
-      } else {
-        Serial.print(temperatura_fusionada_inst, 2);
-        Serial.print(" °C");
-        if (!isnan(incert_temp_inst)) {
-          Serial.print(" (±");
-          Serial.print(incert_temp_inst, 2);
-          Serial.print(" °C)");
-        }
-      }
-
-      Serial.print(", Humedad relativa del aire: ");
-      if (isnan(humedad_fusionada_inst)) {
-        Serial.print("NaN");
-      } else {
-        Serial.print(humedad_fusionada_inst, 1);
-        Serial.print(" %");
-        if (!isnan(incert_hum_inst)) {
-          Serial.print(" (±");
-          Serial.print(incert_hum_inst, 1);
-          Serial.print(" %)");
-        }
-      }
-      Serial.println();
+      procesarMedicionInstantanea(ahora);
     }
 
     // =========================
@@ -721,127 +970,17 @@ void loop() {
     // =========================
     if (ahora - ultimoTiempoJSON >= INTERVALO_JSON_MS) {
       ultimoTiempoJSON = ahora;
-
-      // Cálculo de promedios por sensor
-      float prom_temp_bme = (conteo_temp_bme > 0) ? (suma_temp_bme / conteo_temp_bme) : NAN;
-      float prom_hum_bme  = (conteo_hum_bme  > 0) ? (suma_hum_bme  / conteo_hum_bme)  : NAN;
-      float prom_pres_bme = (conteo_pres_bme > 0) ? (suma_pres_bme / conteo_pres_bme) : NAN;
-
-      float prom_temp_dht = (conteo_temp_dht > 0) ? (suma_temp_dht / conteo_temp_dht) : NAN;
-      float prom_hum_dht  = (conteo_hum_dht  > 0) ? (suma_hum_dht  / conteo_hum_dht)  : NAN;
-
-      float prom_temp_scd = (conteo_temp_scd > 0) ? (suma_temp_scd / conteo_temp_scd) : NAN;
-      float prom_hum_scd  = (conteo_hum_scd  > 0) ? (suma_hum_scd  / conteo_hum_scd)  : NAN;
-      float prom_co2      = (conteo_co2      > 0) ? ((float)suma_co2 / conteo_co2)    : 0.0f;
-
-      double prom_lat = (conteo_latlon > 0) ? (suma_lat / conteo_latlon) : NAN;
-      double prom_lon = (conteo_latlon > 0) ? (suma_lon / conteo_latlon) : NAN;
-      int prom_sat    = (conteo_sat    > 0) ? (int)((float)suma_sat / conteo_sat + 0.5f) : 0;
-
-      // Fusión por minuto
-      float temperatura_fusionada_min     = NAN;
-      float humedad_fusionada_min         = NAN;
-      float incertidumbre_temperatura_min = NAN;
-      float incertidumbre_humedad_min     = NAN;
-
-      fusionarTemperatura(
-        prom_temp_bme, bme_ok && !isnan(prom_temp_bme),
-        prom_temp_dht, !isnan(prom_temp_dht),
-        prom_temp_scd, scd_ok && !isnan(prom_temp_scd),
-        &temperatura_fusionada_min, &incertidumbre_temperatura_min
-      );
-
-      fusionarHumedad(
-        prom_hum_bme, bme_ok && !isnan(prom_hum_bme),
-        prom_hum_dht, !isnan(prom_hum_dht),
-        prom_hum_scd, scd_ok && !isnan(prom_hum_scd),
-        &humedad_fusionada_min, &incertidumbre_humedad_min
-      );
-
-      // Generación del JSON con valores únicos y fusionados
-      uint16_t co2_promedio_ppm = (uint16_t)(prom_co2 + 0.5f); // redondeo simple
-
-      ultimoJSON = guardarJSON(
-        temperatura_fusionada_min,
-        humedad_fusionada_min,
-        prom_pres_bme,
-        co2_promedio_ppm,
-        prom_lat,
-        prom_lon,
-        prom_sat,
-        incertidumbre_temperatura_min,
-        incertidumbre_humedad_min
-      );
-
-      // Enviar al backend
-      enviarMedicionJSON(ultimoJSON);
-
-      // Salida de resumen del último minuto
-      Serial.println("====================================================");
-      Serial.println("RESUMEN DEL ÚLTIMO MINUTO (VALORES OFICIALES):");
-
-      Serial.print("Temperatura del aire (fusionada): ");
-      if (isnan(temperatura_fusionada_min)) {
-        Serial.print("NaN");
-      } else {
-        Serial.print(temperatura_fusionada_min, 2);
-        Serial.print(" °C");
-        if (!isnan(incertidumbre_temperatura_min)) {
-          Serial.print(" (±");
-          Serial.print(incertidumbre_temperatura_min, 2);
-          Serial.print(" °C)");
-        }
-      }
-      Serial.println();
-
-      Serial.print("Humedad relativa del aire (fusionada): ");
-      if (isnan(humedad_fusionada_min)) {
-        Serial.print("NaN");
-      } else {
-        Serial.print(humedad_fusionada_min, 1);
-        Serial.print(" %");
-        if (!isnan(incertidumbre_humedad_min)) {
-          Serial.print(" (±");
-          Serial.print(incertidumbre_humedad_min, 1);
-          Serial.print(" %)");
-
-        }
-      }
-      Serial.println();
-
-      Serial.print("Presión atmosférica media (BME280): ");
-      if (isnan(prom_pres_bme)) {
-        Serial.println("NaN");
-      } else {
-        Serial.print(prom_pres_bme, 1);
-        Serial.println(" hPa");
-      }
-
-      Serial.print("Concentración media de CO2 (SCD4x): ");
-      Serial.print(co2_promedio_ppm);
-      Serial.println(" ppm");
-
-      Serial.print("Posición media GPS -> Latitud: ");
-      if (isnan(prom_lat)) Serial.print("NaN"); else Serial.print(prom_lat, 6);
-      Serial.print(", Longitud: ");
-      if (isnan(prom_lon)) Serial.print("NaN"); else Serial.print(prom_lon, 6);
-      Serial.print(", Número medio de satélites: ");
-      Serial.println(prom_sat);
-
-      Serial.println("JSON generado (promedios de 1 minuto, listo para ser enviado a una API web):");
-      Serial.println(ultimoJSON);
-      Serial.println("====================================================\n");
-
-      // Reset de acumuladores para el siguiente minuto
-      resetAcumuladoresMinuto();
+      procesarMinuto();
     }
   }
 }
 
-// ----------------------------------------------------------------------
+// =========================
+// Construcción de JSON
+// =========================
+
 // Función que construye un JSON con los valores fusionados (promedio 1 min)
 // y lo devuelve como String (también se copia en ultimoJSON).
-// ----------------------------------------------------------------------
 String guardarJSON(float temp_fusion, float hum_fusion, float pres_bme,
                    uint16_t co2_ppm, double lat, double lon, int sat,
                    float incert_temp, float incert_hum) {

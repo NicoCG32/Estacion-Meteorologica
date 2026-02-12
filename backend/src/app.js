@@ -88,6 +88,49 @@ function createApp(options) {
     return text;
   }
 
+  function evaluarSospecha(actual, anterior) {
+    if (!anterior) {
+      return { sospechosa: false, motivos: [] };
+    }
+
+    const motivos = [];
+    const reglas = [
+      {
+        campo: 'temperatura_aire_celsius',
+        umbral: 5,
+        etiqueta: 'Cambio brusco en temperatura'
+      },
+      {
+        campo: 'humedad_aire_porcentaje',
+        umbral: 15,
+        etiqueta: 'Cambio brusco en humedad'
+      },
+      {
+        campo: 'presion_atmosferica_hPa',
+        umbral: 5,
+        etiqueta: 'Cambio brusco en presion'
+      },
+      {
+        campo: 'concentracion_CO2_ppm',
+        umbral: 400,
+        etiqueta: 'Cambio brusco en CO2'
+      }
+    ];
+
+    reglas.forEach((regla) => {
+      const a = actual[regla.campo];
+      const b = anterior[regla.campo];
+      if (typeof a === 'number' && typeof b === 'number') {
+        const delta = Math.abs(a - b);
+        if (delta >= regla.umbral) {
+          motivos.push(`${regla.etiqueta} (Δ=${delta.toFixed(2)})`);
+        }
+      }
+    });
+
+    return { sospechosa: motivos.length > 0, motivos };
+  }
+
   function parseDateParam(value) {
     if (!value) return null;
     const time = Date.parse(value);
@@ -241,6 +284,14 @@ function createApp(options) {
       timestamp: new Date().toISOString(),
       ...data
     };
+
+    const sospecha = evaluarSospecha(medicion, ultimaMedicion);
+    if (sospecha.sospechosa) {
+      medicion.sospechosa = true;
+      medicion.motivos_sospecha = sospecha.motivos;
+    } else {
+      medicion.sospechosa = false;
+    }
 
     mediciones.push(medicion);
     if (mediciones.length > maxInMemory) {

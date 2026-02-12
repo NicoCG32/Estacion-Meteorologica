@@ -123,6 +123,20 @@ function actualizarUltimaMedicion(m) {
     return;
   }
 
+  const alertEl = document.getElementById("alert-sospecha");
+  if (alertEl) {
+    if (m.sospechosa) {
+      const motivos = Array.isArray(m.motivos_sospecha)
+        ? m.motivos_sospecha.join(" | ")
+        : "Cambio brusco detectado";
+      alertEl.textContent = `Advertencia: medicion sospechosa. ${motivos}.`;
+      alertEl.hidden = false;
+    } else {
+      alertEl.textContent = "";
+      alertEl.hidden = true;
+    }
+  }
+
   const tsLocal = m.timestamp ? new Date(m.timestamp).toLocaleString() : "-";
   document.getElementById("last-ts").textContent = tsLocal;
 

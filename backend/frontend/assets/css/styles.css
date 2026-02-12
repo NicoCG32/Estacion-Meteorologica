@@ -353,6 +353,17 @@ h1 {
   border-bottom: none;
 }
 
+.alert {
+  margin: 0 0 0.7rem 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
 .label {
   color: var(--text-muted);
   width: 55%;

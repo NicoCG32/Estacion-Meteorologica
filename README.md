@@ -8,7 +8,7 @@ Proyecto universitario de una estacion meteorologica y de calidad del aire de ba
 - [backend/README.md](backend/README.md): endpoints, exportacion y ejecucion
 - [firmware/README.md](firmware/README.md): cableado, sensores y configuracion
 - [docs/README.md](docs/README.md): documentacion del informe
-- [diagramas/circuito.drawio](diagramas/circuito.drawio): circuito del prototipo
+- [diagramas/circuito.jpg](diagramas/circuito.jpg): circuito del prototipo
 
 ## Inicio rapido
 

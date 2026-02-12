@@ -5,7 +5,6 @@ Este backend es el punto de encuentro entre la estacion y el usuario: recibe med
 Ver tambien:
 - [manual-de-usuario.md](../manual-de-usuario.md)
 - [firmware/README.md](../firmware/README.md)
-- [diagramas/circuito.drawio](../diagramas/circuito.drawio)
 - [diagramas/circuito.jpg](../diagramas/circuito.jpg)
 
 ```mermaid
@@ -89,6 +88,8 @@ Campos esperados en la medicion:
 El backend agrega:
 - id
 - timestamp
+- sospechosa
+- motivos_sospecha
 
 ## API
 

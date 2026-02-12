@@ -5,7 +5,6 @@ Este firmware corre en el ESP32-S3 y es el encargado de obtener las mediciones f
 Ver tambien:
 - [manual-de-usuario.md](../manual-de-usuario.md)
 - [backend/README.md](../backend/README.md)
-- [diagramas/circuito.drawio](../diagramas/circuito.drawio)
 - [diagramas/circuito.jpg](../diagramas/circuito.jpg)
 
 ```mermaid
@@ -66,6 +65,15 @@ const char* BACKEND_URL = "http://192.168.4.2:3001/api/mediciones";
 const unsigned long INTERVALO_MEDIDA_MS = 2000;
 const unsigned long INTERVALO_JSON_MS = 10000;
 ```
+
+Filtro de cambios bruscos (firmware):
+
+- Temperatura: 5.0 C
+- Humedad: 15.0 %
+- Presion: 5.0 hPa
+- CO2: 400 ppm
+
+Las mediciones fuera de esos umbrales se descartan antes de enviar.
 
 ## Carga del firmware
 

@@ -4,16 +4,31 @@
   "description": "",
   "main": "servers/esp32.js",
   "scripts": {
-    "start": "node servers/esp32.js",
-    "start:dev": "node servers/dev.js",
-    "start:esp32": "node servers/esp32.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --env-file-if-exists=.env servers/esp32.js",
+    "start:dev": "node --env-file-if-exists=.env servers/dev.js",
+    "start:esp32": "node --env-file-if-exists=.env servers/esp32.js",
+    "test": "node --test test/*.test.js",
+    "test:watch": "node --test --watch test/*.test.js",
+    "test:coverage": "node scripts/test-coverage.cjs",
+    "format": "prettier --write . --ignore-path ../.prettierignore",
+    "format:check": "prettier --check . --ignore-path ../.prettierignore",
+    "lint": "eslint . --max-warnings=0"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=24.21.0 <25"
+  },
   "dependencies": {
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.12.0",
+    "eslint-config-prettier": "10.1.8",
+    "globals": "17.13.0",
+    "prettier": "3.9.9"
   }
 }

@@ -2,6 +2,7 @@
 /backend/node_modules/
 /backend/npm-debug.log*
 /backend/.env
+/backend/coverage/
 
 # OS
 .DS_Store

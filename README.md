@@ -9,6 +9,12 @@ Proyecto universitario de una estacion meteorologica y de calidad del aire de ba
 - [firmware/README.md](firmware/README.md): cableado, sensores y configuracion
 - [docs/README.md](docs/README.md): documentacion del informe
 - [diagramas/circuito.jpg](diagramas/circuito.jpg): circuito del prototipo
+- [CHANGELOG.md](CHANGELOG.md): cambios del proyecto
+
+## Licencia
+
+Codigo distribuido bajo [ISC](LICENSE). Los avisos y licencias de dependencias
+y recursos de terceros se conservan por separado.
 
 ## Inicio rapido
 

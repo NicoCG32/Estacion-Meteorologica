@@ -165,6 +165,12 @@ backend/
     assets/
       css/
       js/
+        app.js
+        api.mjs
+        state.mjs
+        render.mjs
+        charts.mjs
+        export-controls.mjs
     img/
   servers/
     esp32.js
@@ -195,6 +201,7 @@ backend/
     logger.test.js
     stream-export.test.js
     storage-boundaries.test.js
+    frontend.test.js
     helpers.cjs
   scripts/
     test-coverage.cjs
@@ -222,6 +229,25 @@ backend/
 - src/logger.js: eventos JSON y filtrado por LOG_LEVEL, sin cuerpos de mediciones.
 - src/routes/: endpoints de estado e ingesta/consulta/exportacion.
 - test/: caracterizacion HTTP y pruebas unitarias.
+
+## Dashboard
+
+Modulos nativos del navegador, sin build adicional: app.js coordina sondeos;
+api.mjs consulta y valida respuestas con plazo de 5 s; state.mjs conserva datos
+y vigencia; render.mjs actualiza textos/indicadores; charts.mjs dibuja canvas;
+export-controls.mjs valida fechas y enlaces de descarga.
+
+La consulta se repite aproximadamente cada 10 s, sin peticiones solapadas, y
+**Actualizar ahora** permite reintentar. Se muestran carga, vacio, consulta
+fallida, fechas no verificables y datos de mas de 90 s. Ante error se mantienen
+los ultimos valores, identificados como anteriores, y los sensores quedan sin
+vigencia comprobada. Una respuesta del servidor o una muestra reciente no es un
+diagnostico directo del hardware. DHT22 permanece no observable individualmente.
+
+Los graficos conservan las ultimas 60 mediciones por ID/timestamp completo,
+sin repetir un punto por cada consulta. Ausencias y CO2=0 dejan huecos en el
+trazo; no se representan como lecturas ambientales. Los controles de fechas
+bloquean rangos invertidos, tambien al activar el enlace con el teclado.
 
 ## Datos
 

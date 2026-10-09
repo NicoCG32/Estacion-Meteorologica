@@ -436,6 +436,41 @@ pre {
   background: #ffffff;
 }
 
+.connection-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.connection-notice {
+  flex: 1 1 300px;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #fcd34d;
+  border-radius: 14px;
+  color: #92400e;
+  background: #fffbeb;
+  font-size: 0.85rem;
+}
+
+.connection-notice.state-fresh {
+  color: #065f46;
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+}
+
+.connection-notice.state-error {
+  color: #991b1b;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 .hint {
   margin-top: 0.5rem;
   font-size: 0.78rem;

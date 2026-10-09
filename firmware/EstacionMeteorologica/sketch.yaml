@@ -1,0 +1,15 @@
+profiles:
+  esp32s3:
+    fqbn: esp32:esp32:esp32s3
+    platforms:
+      - platform: esp32:esp32 (3.3.12)
+        platform_index_url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+    libraries:
+      - Adafruit BME280 Library (2.3.0)
+      - Adafruit Unified Sensor (1.1.15)
+      - Adafruit BusIO (1.17.4)
+      - DHT sensor library (1.4.7)
+      - Sensirion I2C SCD4x (1.1.0)
+      - Sensirion Core (0.7.3)
+      - TinyGPSPlus (1.0.3)
+default_profile: esp32s3

@@ -27,6 +27,18 @@
 				</div>
 			</header>
 
+			<div class="connection-controls">
+				<p
+					id="connection-notice"
+					class="connection-notice state-loading"
+					role="status"
+					aria-live="polite"
+					aria-atomic="true"
+				>
+					Consultando el servidor...
+				</p>
+				<button id="refresh-button" class="btn btn-ghost" type="button">Actualizar ahora</button>
+			</div>
 			<section class="grid-2">
 				<div class="card" id="estado-sensores">
 					<div class="card-header">
@@ -68,7 +80,7 @@
 				<div class="card" id="estado-servidor">
 					<div class="card-header">
 						<h2>Estado del servidor</h2>
-						<span class="chip">Backend activo</span>
+						<span class="chip" id="server-chip">Cargando</span>
 					</div>
 					<div class="stats">
 						<div class="stat">
@@ -122,7 +134,7 @@
 			<section class="grid-2">
 				<div class="card">
 					<div class="card-header">
-						<h2>Ultima medicion oficial (promedio 1 min)</h2>
+						<h2>Ultima medicion agregada</h2>
 						<span class="chip">Resumen</span>
 					</div>
 					<p class="alert" id="alert-sospecha" hidden></p>
@@ -191,7 +203,7 @@
 						<canvas id="chartTemp"></canvas>
 					</div>
 					<p class="hint">
-						Ultimos 60 puntos (minutos, si hay datos suficientes) de temperatura fusionada.
+						Ultimas 60 mediciones de temperatura fusionada; no equivalen a 60 minutos.
 					</p>
 				</div>
 
@@ -230,6 +242,6 @@
 			</section>
 		</div>
 
-		<script src="assets/js/app.js"></script>
+		<script type="module" src="assets/js/app.js"></script>
 	</body>
 </html>

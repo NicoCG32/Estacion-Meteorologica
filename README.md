@@ -10,6 +10,8 @@ Proyecto universitario de una estacion meteorologica y de calidad del aire de ba
 - [docs/README.md](docs/README.md): documentacion del informe
 - [diagramas/circuito.jpg](diagramas/circuito.jpg): circuito del prototipo
 - [CHANGELOG.md](CHANGELOG.md): cambios del proyecto
+- [ARCHITECTURE.md](ARCHITECTURE.md): flujo local, modulos y limites del sistema
+- [CONTRIBUTING.md](CONTRIBUTING.md): entorno, verificaciones y colaboracion
 
 ## Licencia
 

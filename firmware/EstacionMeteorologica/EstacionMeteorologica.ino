@@ -9,36 +9,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-// =========================
-// Configuracion (ajustar segun despliegue)
-// =========================
-
-// Wi-Fi (ESP32 como Punto de Acceso) y backend
-const char* AP_SSID = "EstMeteo Proyecto IDS";     // Nombre de la red Wi-Fi creada por el ESP32
-const char* AP_PASS = "nota7IDS";                 // Contrasena (minimo 8 caracteres)
-const char* BACKEND_URL = "http://192.168.4.2:3001/api/mediciones";
-
-// Pines
-#define SDA_PIN   17
-#define SCL_PIN   18
-
-#define DHTPIN    7
-#define DHTTYPE   DHT22
-
-#define GPS_RX_PIN 40   // RX del ESP32-S3 (entrada desde TX del GPS)
-#define GPS_TX_PIN 41   // TX del ESP32-S3 (salida hacia RX del GPS)
-
-// Tiempos de medicion y agregacion
-const unsigned long INTERVALO_MEDIDA_MS = 2000;   // medir cada 2 segundos
-const unsigned long INTERVALO_JSON_MS   = 20000;  // generar JSON cada 20 segundos
-const unsigned long DELAY_INICIAL_MS   = 10000;  // espera inicial antes de medir
-
-// Filtro de cambios bruscos (firmware)
-const float UMBRAL_TEMP_C = 5.0f;
-const float UMBRAL_HUM_PORC = 15.0f;
-const float UMBRAL_PRES_HPA = 5.0f;
-const float UMBRAL_CO2_PPM = 400.0f;
-
+#include "config.h"
 
 // Inicia el punto de acceso Wi-Fi del ESP32 (modo AP)
 void iniciarPuntoDeAcceso() {
@@ -133,7 +104,7 @@ unsigned long ultimoTiempoMedida = 0;
 unsigned long ultimoTiempoJSON   = 0;
 
 // =========================
-// Acumuladores por minuto
+// Acumuladores del intervalo
 // =========================
 
 // BME280
@@ -334,7 +305,7 @@ void imprimirResumenMinuto(float temp, float hum, float pres, uint16_t co2,
   Serial.print(", Número medio de satélites: ");
   Serial.println(sat);
 
-  Serial.println("JSON generado (promedios de 1 minuto, listo para ser enviado a una API web):");
+  Serial.println("JSON generado (promedios del intervalo, listo para ser enviado a una API web):");
   Serial.println(json);
   Serial.println("====================================================\n");
 }
@@ -544,7 +515,7 @@ void procesarMedicionInstantanea(unsigned long ahora) {
 }
 
 // =========================
-// Agregación mensual (cada minuto)
+// Agregacion por intervalo
 // =========================
 
 void procesarMinuto() {
@@ -564,7 +535,7 @@ void procesarMinuto() {
   double prom_lon = (conteo_latlon > 0) ? (suma_lon / conteo_latlon) : NAN;
   int prom_sat    = (conteo_sat    > 0) ? (int)((float)suma_sat / conteo_sat + 0.5f) : 0;
 
-  // Fusión por minuto
+  // Fusion del intervalo
   float temperatura_fusionada_min     = NAN;
   float humedad_fusionada_min         = NAN;
   float incertidumbre_temperatura_min = NAN;
@@ -626,7 +597,7 @@ void procesarMinuto() {
   }
 
   if (!sospechosa) {
-    // Salida de resumen del ultimo minuto
+    // Salida de resumen del intervalo
     imprimirResumenMinuto(
       temperatura_fusionada_min,
       humedad_fusionada_min,
@@ -641,7 +612,7 @@ void procesarMinuto() {
     );
   }
 
-  // Reset de acumuladores para el siguiente minuto
+  // Reset de acumuladores para el siguiente intervalo
   resetAcumuladoresMinuto();
 }
 
@@ -979,7 +950,7 @@ void loop() {
 // Construcción de JSON
 // =========================
 
-// Función que construye un JSON con los valores fusionados (promedio 1 min)
+// Función que construye un JSON con los valores fusionados (promedio del intervalo)
 // y lo devuelve como String (también se copia en ultimoJSON).
 String guardarJSON(float temp_fusion, float hum_fusion, float pres_bme,
                    uint16_t co2_ppm, double lat, double lon, int sat,

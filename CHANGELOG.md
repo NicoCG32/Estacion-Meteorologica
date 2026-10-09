@@ -8,6 +8,11 @@ establece por si sola una fecha de lanzamiento.
 
 ### Added
 
+- Modulos nativos para consultas, estado, renderizado, graficos y controles de
+  exportacion; avisos de carga, ausencia de datos, consulta fallida y vigencia.
+- Boton de actualizacion manual y pruebas de estado/cliente del frontend.
+- Perfil Arduino con placa/core/librerias fijados, config.h y guias de
+  arquitectura y contribucion independientes.
 - Cobertura nativa de src/ con minimos 95/90/95 para lineas/ramas/funciones,
   control de todos los modulos, informes LCOV/JSON/SVG y resumen/artefactos en CI.
 - Badges de CI y politica minima de cobertura; pruebas de almacenamiento al
@@ -29,6 +34,10 @@ establece por si sola una fecha de lanzamiento.
 
 ### Changed
 
+- Sketch en firmware/EstacionMeteorologica/ para compilar con Arduino IDE/CLI;
+  configuracion extraida sin cambiar pines, intervalos o umbrales.
+- Etiquetas y comentarios de agregacion corregidos a intervalo de 20 s; graficos
+  de 60 mediciones y estados de sensores basados en vigencia, sin diagnostico de DHT22.
 - POST confirma escritura y cierre antes del 201; cola serializada, ID por encima
   del historico y restauracion de escrituras parciales con bloqueo si falla.
 - Exportaciones respetan backpressure, cancelacion y errores de lectura; fechas

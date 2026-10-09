@@ -53,22 +53,23 @@ Notas:
 
 El ESP32 crea un punto de acceso (AP):
 - SSID: "EstMeteo Proyecto IDS"
-- Password: "nota7IDS"
+- Contrasena: consultar AP_PASS en [config.h](firmware/EstacionMeteorologica/config.h).
 
 Cuando el PC se conecta a esa red, su IP tipica es 192.168.4.2. Ese dato se usa en el firmware para enviar las mediciones al backend.
 
 ## 5) Configurar el firmware
 
-Archivo: firmware/EstacionMeteorologica.ino
+Archivo: [firmware/EstacionMeteorologica/config.h](firmware/EstacionMeteorologica/config.h).
 
 Revisar y ajustar:
 - BACKEND_URL: debe apuntar al PC conectado al AP del ESP32
   - Ejemplo: http://192.168.4.2:3001/api/mediciones
 - Intervalos:
-  - INTERVALO_MEDIDA_MS: lectura frecuente de sensores
-  - INTERVALO_JSON_MS: envio agregado al backend
+  - INTERVALO_MEDIDA_MS: lectura cada 2 s por defecto
+  - INTERVALO_JSON_MS: agregacion/envio cada 20 s por defecto
 
-Luego cargar el firmware desde Arduino IDE.
+Compilacion y carga con versiones fijadas: ver [guia del firmware](firmware/README.md).
+La validacion fisica de sensores, placa y red se realiza despues de cargar.
 
 ## 6) Backend y pagina web
 
@@ -77,7 +78,7 @@ El backend recibe mediciones y expone una pagina web con graficos.
 Pasos:
 1) Ir a backend/
 2) Instalar dependencias:
-   - npm install
+   - npm ci (Node 24.21.0)
 3) Iniciar servidor:
   - npm run start:esp32
   - o ejecutar run-esp32.bat
@@ -97,6 +98,13 @@ Para detalles del formato, exportacion a CSV y ejemplos, ver [backend/README.md]
 La lista completa de endpoints y ejemplos esta en [backend/README.md](backend/README.md).
 
 ## 9) Solucion de problemas
+
+El dashboard consulta aproximadamente cada 10 s. Muestra carga, ausencia de
+mediciones, fallo de consulta y antiguedad mayor de 90 s. Si falla la conexion,
+conserva los ultimos datos y permite reintentar con **Actualizar ahora**. Un
+backend disponible no prueba que esten llegando nuevas muestras ni que todos los
+sensores funcionen; DHT22 no es observable por separado. Los graficos muestran
+60 mediciones, no 60 minutos. Mas detalle en [guia backend](backend/README.md).
 
 - La pagina no carga: confirma que el backend este corriendo en el puerto 3001.
 - No llegan datos: revisa BACKEND_URL y que el PC este en la red del ESP32.

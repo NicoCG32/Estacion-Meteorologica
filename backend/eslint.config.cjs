@@ -20,9 +20,9 @@ module.exports = [
     },
   },
   {
-    files: ['frontend/**/*.js'],
+    files: ['frontend/**/*.{js,mjs}'],
     languageOptions: {
-      sourceType: 'script',
+      sourceType: 'module',
       globals: globals.browser,
     },
   },

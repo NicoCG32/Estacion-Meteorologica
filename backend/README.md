@@ -96,7 +96,7 @@ npm run test:coverage
 ```
 
 ESLint revisa JavaScript del servidor como CommonJS y JavaScript del navegador
-como script con sus propias variables globales. Los avisos hacen fallar el comando.
+como modulos ES con sus propias variables globales. Los avisos hacen fallar el comando.
 Prettier comprueba el formato de JavaScript, CSS, HTML, JSON y Markdown en backend.
 Para aplicarlo:
 

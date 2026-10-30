@@ -25,3 +25,13 @@ Son criterios de revisión, no certificaciones de accesibilidad ya obtenidas. La
 
 [README.md](../README.md) · [ARCHITECTURE.md](../ARCHITECTURE.md) · [manual-de-usuario.md](../manual-de-usuario.md) · [backend/README.md](../backend/README.md) · [firmware/README.md](../firmware/README.md).
 <!-- DOCUMENTACION:nivel-2026-10-29:END -->
+
+<!-- IDENTIDAD:2026-10-30 -->
+
+## Recursos de identidad y distribución
+
+[Catálogo de originales y variantes](../branding/README.md) · [Manifest de identidad](../branding/manifest.json).
+
+El dashboard sirve el logotipo horizontal y favicon SVG desde backend/frontend/assets/brand. La interfaz actual usa su variante para fondo claro. Los logos universitarios y los informes originales se conservan.
+
+Los banners de presentación se seleccionan por tema en el README. Las aplicaciones incorporan sólo los recursos necesarios, con dimensiones/proporción estables; las variantes y originales permanecen en branding. La identidad visual no amplía funcionalidades ni cambia las condiciones de uso.

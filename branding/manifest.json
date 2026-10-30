@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "project": "EstacionMeteorologica",
+  "bannerLight": "estacion-meteorologica-banner.png",
+  "bannerDark": "estacion-meteorologica-banner.png",
+  "resources": [
+    "estacion-meteorologica-banner.png",
+    "estacion-meteorologica-banner.svg",
+    "estacion-meteorologica-icono.png",
+    "estacion-meteorologica-icono.svg",
+    "estacion-meteorologica-logo-horizontal-oscuro.png",
+    "estacion-meteorologica-logo-horizontal-oscuro.svg",
+    "estacion-meteorologica-logo-horizontal.png",
+    "estacion-meteorologica-logo-horizontal.svg"
+  ]
+}

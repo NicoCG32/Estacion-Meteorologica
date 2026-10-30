@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="-240 -240 480 480">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2=".18" y2="1"><stop offset="0" stop-color="#93C8D9"/><stop offset=".64" stop-color="#CCE8D3"/><stop offset="1" stop-color="#EDF0BD"/></linearGradient>
+ <radialGradient id="sunGlow"><stop offset="0" stop-color="#FFF6C4" stop-opacity=".88"/><stop offset="1" stop-color="#FFF3BD" stop-opacity="0"/></radialGradient>
+ <linearGradient id="far" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9CCF7B"/><stop offset="1" stop-color="#77BB83"/></linearGradient>
+ <linearGradient id="near" x1="0" y1="0" x2="1" y2=".4"><stop offset="0" stop-color="#215F54"/><stop offset="1" stop-color="#164A47"/></linearGradient>
+ <linearGradient id="hardware" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#225B50"/><stop offset="1" stop-color="#123D3E"/></linearGradient>
+ <linearGradient id="darkbadge" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#173F48"/><stop offset="1" stop-color="#0E2A34"/></linearGradient>
+ <linearGradient id="wordmark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D7B76"/><stop offset="1" stop-color="#164A52"/></linearGradient>
+ <clipPath id="roundClip"><circle cx="0" cy="0" r="198"/></clipPath>
+ <filter id="drop" x="-30%" y="-30%" width="160%" height="170%"><feGaussianBlur stdDeviation="13"/></filter>
+</defs>
+<circle cx="0" cy="0" r="211" fill="#F4F5DA"/>
+<g clip-path="url(#roundClip)">
+<!-- circle of atmosphere and ecology -->
+<circle cx="0" cy="0" r="198" fill="url(#darkbadge)"/>
+<circle cx="0" cy="0" r="174" fill="none" stroke="#C7E6C7" stroke-opacity=".2" stroke-width="2"/>
+<path d="M-198 74Q-89 9 15 87 T198 52 L198 198H-198Z" fill="#2D8B76"/>
+<path d="M-198 116 Q-83 58 25 126 T198 102 L198 198H-198Z" fill="#173F48"/>
+<!-- Sky celestial sun and overcast -->
+<circle cx="116" cy="-115" r="35" fill="#DCDE92"/>
+<path d="M-124 -106 Q-113 -130 -84 -115 Q-55 -144 -32 -113 Q-14 -115 -3 -96 L-129 -96Z" fill="#B3DDD2"/>
+<!-- Crossbar and anemometer -->
+<path d="M28 112V-166" stroke="#E7F3DC" stroke-width="12" stroke-linecap="round"/>
+<path d="M-22 -155 H75" stroke="#E7F3DC" stroke-width="9" stroke-linecap="round"/>
+<path d="M28 -155 Q-9 -186 -21 -167 Q-15 -139 14 -146Z" fill="#A2D0A2"/>
+<path d="M28 -155 Q70 -188 86 -158 Q70 -138 40 -148Z" fill="#A2D0A2"/>
+<circle cx="28" cy="-155" r="10" fill="#EAF1D3"/>
+<!-- Screen in front of weather station -->
+<path d="M-120 -65 L82 -65 L54 36 L-144 36Z" fill="#EDF4DC" stroke="#EDF4DC" stroke-width="9" stroke-linejoin="round"/>
+<path d="M-116 -59L-53 -59L-73 27L-137 27Z" fill="#92C46B"/>
+<path d="M-48 -59L76 -59L48 27L-70 27Z" fill="#347E9F"/>
+<path d="M-99 -59L-120 27 M-83 -59L-105 27 M-54 -59L-73 27 M-22 -59L-38 27 M8 -59L-7 27 M39 -59L27 27 M-130 -14H64" stroke="#E2ECD7" stroke-width="5" opacity=".95"/>
+<!-- radiation shield icon -->
+<g stroke="#E7F3DC" stroke-width="8" stroke-linecap="round"><path d="M-105 59H-58 M-108 74H-61 M-111 89H-64"/></g>
+<!-- monitored ground -->
+<path d="M-52 123 Q-12 112 29 118 Q72 124 106 114" fill="none" stroke="#9DCB76" stroke-width="9" stroke-linecap="round"/>
+</g>
+</svg>

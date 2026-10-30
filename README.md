@@ -1,5 +1,10 @@
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="branding/estacion-meteorologica-banner.png" />
+  <img src="branding/estacion-meteorologica-banner.png" alt="Identidad visual de EstacionMeteorologica" width="100%" />
+</picture>
+
 # Estación Meteorológica
 
 **Del sensor al dato: monitoreo ambiental de bajo costo.**
@@ -56,6 +61,8 @@ Abre [localhost:3002](http://localhost:3002). Este modo sirve para desarrollo; p
 | Técnica             | [Arquitectura y diagramas](docs/01-arquitectura-general.md) · [Dominio y datos](docs/04-base-de-datos.md)                                                                        |
 | Desarrollo          | [Etapas y metodología](docs/17-desarrollo-y-metodologia.md) · [Proyección](docs/15-escalabilidad-y-nuevos-mercados.md) · [Costos CLP/USD](docs/18-analisis-economico-clp-usd.md) |
 | Académica/formativa | [Contexto e informes originales](docs/academica/README.md)                                                                                                                       |
+
+[Identidad visual](branding/README.md): logos, banners y variantes de aplicación.
 
 ## Licencia y créditos
 

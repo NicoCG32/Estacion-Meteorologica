@@ -1,8 +1,34 @@
+<div align="center">
+
 # Estación Meteorológica
+
+**Del sensor al dato: monitoreo ambiental de bajo costo.**
+
+[![Estado: Prototipo académico](https://img.shields.io/badge/Estado-Prototipo%20acad%C3%A9mico-267C6B?style=flat-square&labelColor=263244)](#sobre-el-proyecto) [![Plataforma: ESP32 / Web](https://img.shields.io/badge/Plataforma-ESP32%20%2F%20Web-386B8F?style=flat-square&labelColor=263244)](#usar-o-descargar) [![Licencia: ISC](https://img.shields.io/badge/Licencia-ISC-596273?style=flat-square&labelColor=263244)](LICENSING.md)
+
+[![ESP32 S3](https://img.shields.io/badge/ESP32%20S3-B42B2B?style=for-the-badge&logo=espressif&logoColor=FFFFFF)](#tecnologías) [![Arduino](https://img.shields.io/badge/Arduino-007D85?style=for-the-badge&logo=arduino&logoColor=FFFFFF)](#tecnologías) [![Node.js 24](https://img.shields.io/badge/Node.js%2024-356D32?style=for-the-badge&logo=nodedotjs&logoColor=FFFFFF)](#tecnologías) [![Express 5](https://img.shields.io/badge/Express%205-20232A?style=for-the-badge&logo=express&logoColor=FFFFFF)](#tecnologías)
+
+[Documentación](docs/README.md) · [Arquitectura](docs/01-arquitectura-general.md) · [Inicio rápido](#ejecutar-desde-el-código)
+
+</div>
+
+---
+
+## Sobre el proyecto
 
 Prototipo universitario de monitoreo ambiental: un ESP32-S3 captura mediciones, un backend Node.js las almacena y una interfaz web permite consultarlas y exportarlas. Incluye firmware, diagramas e informes del curso.
 
 **Estado:** Prototipo con modos de desarrollo y dispositivo real. No hay instaladores publicados en GitHub Releases; la puesta en marcha se realiza desde el código y el montaje.
+
+## Tecnologías
+
+| Área              | Tecnologías y responsabilidad                                     |
+| ----------------- | ----------------------------------------------------------------- |
+| **Dispositivo**   | ESP32-S3, C++/Arduino y sensores BME280, DHT22, SCD4x y GPS.      |
+| **Backend**       | Node.js 24 y Express 5; recepción HTTP y almacenamiento JSONL.    |
+| **Visualización** | Dashboard web en HTML/CSS/JavaScript y exportación de mediciones. |
+
+> **Enfoque técnico:** Firmware, recepción de datos y visualización como módulos independientes.
 
 ## Usar o descargar
 

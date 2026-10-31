@@ -1,14 +1,8 @@
 # 02 — Catálogo funcional
 
-<!-- DOCUMENTACION:nivel-2026-10-29:BEGIN -->
+## Capacidades y límites
 
-**Nivel:** general / técnica.
-
-## Catálogo de capacidades — revisión 2026-10-29
-
-Revisión documental: 2026-10-29. Base `b02313f499f6` en `main`; árbol inicialmente limpio. La inspección de fuentes no sustituye pruebas de ejecución.
-
-**Estado y alcance:** Prototipo físico/local con backend modular y documentación de entrega. La demostración o el servidor de prueba no certifican calibración científica ni una API de producción.
+**Disponibilidad:** Prototipo de estación física con captura local, backend y dashboard. Su uso como instrumento científico requiere calibración y validación del montaje.
 
 | Módulo      | Capacidad / propósito          | Caso borde o límite                          |
 | ----------- | ------------------------------ | -------------------------------------------- |
@@ -18,9 +12,8 @@ Revisión documental: 2026-10-29. Base `b02313f499f6` en `main`; árbol inicialm
 | Dashboard   | Estado y series                | Sin datos y lecturas sospechosas             |
 | Exportación | CSV/JSONL y rangos             | Rango inválido o sin resultados              |
 
-Los módulos propuestos se identifican expresamente. La disponibilidad en una plataforma no se extrapola a las demás; la aceptación debe cubrir los casos borde del recorrido principal.
+Las capacidades previstas se distinguen de las disponibles. Consulta los requisitos de la plataforma que vas a utilizar.
 
-## Fuentes de implementación y contratos
+## Código y documentación relacionada
 
 [README.md](../README.md) · [ARCHITECTURE.md](../ARCHITECTURE.md) · [manual-de-usuario.md](../manual-de-usuario.md) · [backend/README.md](../backend/README.md) · [firmware/README.md](../firmware/README.md).
-<!-- DOCUMENTACION:nivel-2026-10-29:END -->

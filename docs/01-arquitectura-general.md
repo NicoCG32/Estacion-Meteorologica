@@ -1,14 +1,6 @@
 # 01 — Arquitectura por niveles
 
-<!-- DOCUMENTACION:nivel-2026-10-29:BEGIN -->
-
-**Nivel:** técnica.
-
 ## Arquitectura del sistema por niveles
-
-Revisión documental: 2026-10-29. Base `b02313f499f6` en `main`; árbol inicialmente limpio. La inspección de fuentes no sustituye pruebas de ejecución.
-
-**Estado y alcance:** Prototipo físico/local con backend modular y documentación de entrega. La demostración o el servidor de prueba no certifican calibración científica ni una API de producción.
 
 ### Nivel 1 — Contexto y fronteras de ejecución
 
@@ -40,7 +32,7 @@ ESP32-S3 integra BME280, DHT22, SCD4x y GPS; envía mediciones al backend Node/E
 | Anomalías       | Cambios sospechosos entre lecturas  | [backend/src/anomalias.js](../backend/src/anomalias.js)   |
 | Exportación     | Formato y filtrado de series        | [backend/src/export.js](../backend/src/export.js)         |
 
-Las flechas del contexto representan comunicación/flujo. No se deduce una dependencia de código o transacción compartida sólo porque dos componentes intercambien datos.
+Las flechas muestran el flujo de información entre componentes. Las transacciones y dependencias de código se detallan en los contratos de cada módulo.
 
 ### Nivel 3 — Dominio, contratos y adaptadores
 
@@ -50,7 +42,7 @@ JSONL en disco y ventana acotada en memoria, no una base con tablas/FKs/RLS. Ide
 - La incertidumbre y el estado GPS deben conservar su significado, sin inventar precisión.
 - Una medición sospechosa se señala; no se corrige por conveniencia visual.
 
-Consultar [04-base-de-datos.md](04-base-de-datos.md) para entidades, cardinalidades y representación; [05-motor-o-nucleo-de-negocio.md](05-motor-o-nucleo-de-negocio.md) para invariantes. En un prototipo, las piezas rotuladas propuestas no son clases implementadas.
+Consultar [04-base-de-datos.md](04-base-de-datos.md) para entidades, cardinalidades y representación; [05-motor-o-nucleo-de-negocio.md](05-motor-o-nucleo-de-negocio.md) para invariantes. Las piezas marcadas como propuestas pertenecen al diseño del prototipo.
 
 ### Nivel 4 — Despliegue y distribución
 
@@ -64,7 +56,7 @@ Consultar [04-base-de-datos.md](04-base-de-datos.md) para entidades, cardinalida
                                                           [Usuario y sus datos]
 ```
 
-La persistencia y los servicios del contexto anterior conservan sus propias fronteras. Distribuir un APK no incorpora automáticamente el servidor, una PWA no acredita un instalador y el firmware requiere dispositivo. El capítulo [09-instalacion-y-despliegue.md](09-instalacion-y-despliegue.md) concreta la puesta en marcha.
+El montaje requiere sensores, firmware y un host para el backend. El almacenamiento JSONL necesita un disco persistente. La demostración del dashboard permite revisar la interfaz sin sustituir la instalación ni la calibración de sensores. El capítulo [09-instalacion-y-despliegue.md](09-instalacion-y-despliegue.md) concreta la puesta en marcha.
 
 ### Calidad y límites arquitectónicos
 
@@ -73,9 +65,8 @@ La persistencia y los servicios del contexto anterior conservan sus propias fron
 - Exposición de coordenadas o escritura API
 - Interpretaciones ambientales sin validación suficiente
 
-No se publican garantías de latencia, disponibilidad o escala sin medición para la revisión/entorno concretos. Un diagrama explica responsabilidades; no es una certificación de ejecución o seguridad del servicio desplegado.
+El rendimiento y la capacidad dependen del entorno de ejecución. Consulta las guías de instalación y las limitaciones de cada plataforma antes de desplegar.
 
-## Fuentes de implementación y contratos
+## Código y documentación relacionada
 
 [README.md](../README.md) · [ARCHITECTURE.md](../ARCHITECTURE.md) · [manual-de-usuario.md](../manual-de-usuario.md) · [backend/README.md](../backend/README.md) · [firmware/README.md](../firmware/README.md).
-<!-- DOCUMENTACION:nivel-2026-10-29:END -->

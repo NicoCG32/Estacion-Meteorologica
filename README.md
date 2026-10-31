@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="branding/estacion-meteorologica-banner.png" />
-  <img src="branding/estacion-meteorologica-banner.png" alt="Identidad visual de EstacionMeteorologica" width="100%" />
+  <source media="(prefers-color-scheme: dark)" srcset="branding/banners/estacion-meteorologica-banner.png" />
+  <img src="branding/banners/estacion-meteorologica-banner.png" alt="Identidad visual de EstacionMeteorologica" width="100%" />
 </picture>
 
 # Estación Meteorológica

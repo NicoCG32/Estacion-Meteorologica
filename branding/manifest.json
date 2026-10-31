@@ -1,16 +1,108 @@
 {
   "schemaVersion": 1,
   "project": "EstacionMeteorologica",
-  "bannerLight": "estacion-meteorologica-banner.png",
-  "bannerDark": "estacion-meteorologica-banner.png",
+  "bannerLight": "banners/estacion-meteorologica-banner.png",
+  "bannerDark": "banners/estacion-meteorologica-banner.png",
   "resources": [
-    "estacion-meteorologica-banner.png",
-    "estacion-meteorologica-banner.svg",
-    "estacion-meteorologica-icono.png",
-    "estacion-meteorologica-icono.svg",
-    "estacion-meteorologica-logo-horizontal-oscuro.png",
-    "estacion-meteorologica-logo-horizontal-oscuro.svg",
-    "estacion-meteorologica-logo-horizontal.png",
-    "estacion-meteorologica-logo-horizontal.svg"
-  ]
+    "banners/estacion-meteorologica-banner.png",
+    "banners/estacion-meteorologica-banner.svg",
+    "iconos/estacion-meteorologica-icono.png",
+    "iconos/estacion-meteorologica-icono.svg",
+    "logos/estacion-meteorologica-logo-horizontal-oscuro.png",
+    "logos/estacion-meteorologica-logo-horizontal-oscuro.svg",
+    "logos/estacion-meteorologica-logo-horizontal.png",
+    "logos/estacion-meteorologica-logo-horizontal.svg"
+  ],
+  "groups": {
+    "logos": [
+      "logos/estacion-meteorologica-logo-horizontal-oscuro.png",
+      "logos/estacion-meteorologica-logo-horizontal-oscuro.svg",
+      "logos/estacion-meteorologica-logo-horizontal.png",
+      "logos/estacion-meteorologica-logo-horizontal.svg"
+    ],
+    "iconos": [
+      "iconos/estacion-meteorologica-icono.png",
+      "iconos/estacion-meteorologica-icono.svg"
+    ],
+    "banners": [
+      "banners/estacion-meteorologica-banner.png",
+      "banners/estacion-meteorologica-banner.svg"
+    ],
+    "portadas": [],
+    "referencias": []
+  },
+  "metadata": {
+    "banners/estacion-meteorologica-banner.png": {
+      "format": "png",
+      "bytes": 344134,
+      "sha256": "aef74efaf5726bbfafd0b6da4050ec529c6323b6b1512fa6c871070cc7deb99d",
+      "width": 2700,
+      "height": 1080,
+      "scalable": false,
+      "alpha": true
+    },
+    "banners/estacion-meteorologica-banner.svg": {
+      "format": "svg",
+      "bytes": 11685,
+      "sha256": "7006ec978f314c50254e7ea7fe6b07467d9a7083bbc3db0ad1636d27e69be1af",
+      "width": 1800.0,
+      "height": 720.0,
+      "viewBox": [0.0, 0.0, 1800.0, 720.0],
+      "scalable": true
+    },
+    "iconos/estacion-meteorologica-icono.png": {
+      "format": "png",
+      "bytes": 112149,
+      "sha256": "4fa7419cf4b91f168f233fa7bb2aa833e34522228fc250ce5b10a15dc85cdddb",
+      "width": 1024,
+      "height": 1024,
+      "scalable": false,
+      "alpha": true
+    },
+    "iconos/estacion-meteorologica-icono.svg": {
+      "format": "svg",
+      "bytes": 3175,
+      "sha256": "e8dee8cf3df7a0f90d1cd7fcaddb4665a33ed2d326f60fa18827d5739ea89223",
+      "width": 480.0,
+      "height": 480.0,
+      "viewBox": [-240.0, -240.0, 480.0, 480.0],
+      "scalable": true
+    },
+    "logos/estacion-meteorologica-logo-horizontal-oscuro.png": {
+      "format": "png",
+      "bytes": 73999,
+      "sha256": "95780b98e5d62a0f8592ad36f471ea43adbb35d97855dc26cb8ae75206aebfaf",
+      "width": 1680,
+      "height": 452,
+      "scalable": false,
+      "alpha": true
+    },
+    "logos/estacion-meteorologica-logo-horizontal-oscuro.svg": {
+      "format": "svg",
+      "bytes": 3694,
+      "sha256": "637601bb0628ec6382f05a0184ae3ed6402a0679937be33d5370d256353f9ad1",
+      "width": 1680.0,
+      "height": 452.0,
+      "viewBox": [0.0, 0.0, 1680.0, 452.0],
+      "scalable": true
+    },
+    "logos/estacion-meteorologica-logo-horizontal.png": {
+      "format": "png",
+      "bytes": 74340,
+      "sha256": "f908c913aec94d2b818383e8b025b6bee33446533a81fc0f3d15750bb8054ebd",
+      "width": 1680,
+      "height": 452,
+      "scalable": false,
+      "alpha": true
+    },
+    "logos/estacion-meteorologica-logo-horizontal.svg": {
+      "format": "svg",
+      "bytes": 3694,
+      "sha256": "fa814c8772f9e83c143455675f5af35d42d81b7597ff808cc397a3bd45144fe1",
+      "width": 1680.0,
+      "height": 452.0,
+      "viewBox": [0.0, 0.0, 1680.0, 452.0],
+      "scalable": true
+    }
+  }
 }

@@ -34,6 +34,9 @@ establece por si sola una fecha de lanzamiento.
 
 ### Changed
 
+- Documentación reorganizada en general, técnica, desarrollo y académica, con
+  diagramas de arquitectura, hardware y persistencia. README con resumen ejecutivo
+  y guías de uso y verificación actualizadas.
 - Sketch en firmware/EstacionMeteorologica/ para compilar con Arduino IDE/CLI;
   configuracion extraida sin cambiar pines, intervalos o umbrales.
 - Etiquetas y comentarios de agregacion corregidos a intervalo de 20 s; graficos

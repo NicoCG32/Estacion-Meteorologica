@@ -1,112 +1,42 @@
-# Manual de Usuario
+# Manual de uso · Estación Meteorológica
 
-Este manual explica como usar la estacion meteorologica: hardware, conexion, energia, carga de mediciones y visualizacion.
+Esta guía explica cómo consultar mediciones y conectar la estación durante una sesión de prototipado local.
 
-Ver tambien:
-- [README.md](README.md)
-- [backend/README.md](backend/README.md)
-- [firmware/README.md](firmware/README.md)
-- [diagramas/circuito.drawio](diagramas/circuito.drawio)
-- [diagramas/circuito.jpg](diagramas/circuito.jpg)
+## 1. Identificar los componentes
 
-## 1) Componentes de hardware
+ESP32-S3, BME280 (temperatura/humedad/presión), DHT22 (temperatura/humedad), SCD4x (CO₂/temperatura/humedad) y GPS por UART. Los pines y la lógica se describen en [hardware y firmware](docs/tecnica/02-hardware-y-firmware.md); el [esquema del circuito](diagramas/circuito.png) es una referencia. Si se elige alimentación con panel/batería, se debe validar el montaje y las protecciones; no consta aquí una prueba de autonomía solar.
 
-- Placa: ESP32-S3
-- Sensores:
-  - BME280 (temperatura, humedad, presion) por I2C
-  - DHT22 (temperatura, humedad) por GPIO
-  - SCD4x (CO2, temperatura, humedad) por I2C
-  - Modulo GPS (UART)
-- Fuente: panel solar + bateria Li-ion (ver seccion de energia)
+## 2. Trabajar solo con el backend
 
-## 2) Energia (panel solar y bateria)
+Con **Node.js >=24.21.0 y <25**, y npm instalado, desde `backend/`:
 
-El prototipo se alimenta con panel solar, cargador TP4056 (modulo TP45) y bateria Li-ion.
+```bash
+npm ci
+npm run start:dev
+```
 
-Recomendacion de dimensionamiento:
-- Panel solar: 6V, 1A (aprox 6W) para mantener carga diurna.
-- Bateria Li-ion: 3.7V, 2000 a 3000mAh.
-- Regulador: salida estable 5V o 3.3V para el ESP32-S3 y sensores.
+Abre [localhost:3002](http://localhost:3002). Se mostrarán los datos existentes en `DATA_FILE`; no se generan muestras sintéticas de forma automática. **Antes de iniciar pruebas de ingreso**, configura `backend/.env` según [`.env.example`](backend/.env.example), con `DATA_FILE` apuntando a un archivo independiente. Para trabajar solo en este PC, usa `HOST=127.0.0.1`. Puedes enviar una lectura con el ejemplo de la [API](docs/tecnica/04-api-y-seguridad.md).
 
-Flujo de energia:
-Panel solar -> TP4056 -> Bateria -> Regulador -> ESP32-S3 -> Sensores.
+## 3. Conectar la placa real
 
-Diagrama editable: [diagramas/circuito.drawio](diagramas/circuito.drawio)
+1. Revisa físicamente alimentación, pines y el modelo exacto de placa antes de conectar.
+2. En [`config.h`](firmware/EstacionMeteorologica/config.h), cambia SSID/contraseña de ejemplo, confirma la IP del PC en `BACKEND_URL` e intervalos.
+3. Consulta [instrucciones de compilación/carga](firmware/README.md) y valida respuesta de sensores con el monitor serie.
+4. Conecta el PC a la red AP creada por el ESP32. Configura `HOST` con la IP del PC en esa red o con `0.0.0.0` para escuchar en todas sus interfaces; ejecuta `npm run start:esp32` desde `backend/`.
+5. Abre `http://localhost:3001` en el PC y comprueba solicitudes entrantes. Los puertos pueden cambiar si configuras `PORT`.
 
-Vista rapida del circuito:
+El firmware hace lecturas aproximadas cada **2 segundos** y construye/envía un conjunto aproximadamente cada **20 segundos**. Los saltos bruscos pueden **descartarse en el firmware**: una ausencia en el gráfico no permite inferir que no hubo evento ambiental.
 
-![Circuito del prototipo](diagramas/circuito.jpg)
+## 4. Leer el dashboard
 
-## 3) Conexion y pines
+- Se actualiza mediante consultas periódicas de aproximadamente **10 segundos** y permite actualizar manualmente.
+- «Datos antiguos» significa más de **90 segundos** desde el timestamp del servidor; no es diagnóstico directo de todos los sensores.
+- El estado individual del DHT22 **no puede observarse** desde la API actual; otros indicadores se infieren de los campos de la última muestra.
+- El gráfico incluye hasta **60** puntos y puede presentar huecos por valores faltantes. CO₂ igual a cero no se interpreta como lectura ambiental.
+- La página ofrece exportaciones **CSV** o **JSONL**, con filtro opcional de fechas. La exportación recorre el archivo completo, no solo la ventana del gráfico.
 
-En el firmware actual:
-- I2C: SDA = GPIO 17, SCL = GPIO 18
-- DHT22: DATA = GPIO 7
-- GPS: RX = GPIO 40, TX = GPIO 41
+## 5. Precauciones
 
-Notas:
-- El BME280 puede estar en 0x76 o 0x77.
-- El SCD4x usa I2C (SCD41_I2C_ADDR_62).
-- El GPS se conecta por UART (Serial1 a 9600).
+El servidor local utiliza HTTP **sin autenticación**. Para pruebas con un solo PC, restringe su interfaz y guarda el historial fuera de la carpeta versionada. Los datos de GPS pueden revelar lugares concretos. No lo expongas a Internet ni lo emplees para alertas de seguridad, calidad del aire certificada o decisiones críticas sin rediseñar y validar el sistema.
 
-## 4) Red Wi-Fi del ESP32
-
-El ESP32 crea un punto de acceso (AP):
-- SSID: "EstMeteo Proyecto IDS"
-- Contrasena: consultar AP_PASS en [config.h](firmware/EstacionMeteorologica/config.h).
-
-Cuando el PC se conecta a esa red, su IP tipica es 192.168.4.2. Ese dato se usa en el firmware para enviar las mediciones al backend.
-
-## 5) Configurar el firmware
-
-Archivo: [firmware/EstacionMeteorologica/config.h](firmware/EstacionMeteorologica/config.h).
-
-Revisar y ajustar:
-- BACKEND_URL: debe apuntar al PC conectado al AP del ESP32
-  - Ejemplo: http://192.168.4.2:3001/api/mediciones
-- Intervalos:
-  - INTERVALO_MEDIDA_MS: lectura cada 2 s por defecto
-  - INTERVALO_JSON_MS: agregacion/envio cada 20 s por defecto
-
-Compilacion y carga con versiones fijadas: ver [guia del firmware](firmware/README.md).
-La validacion fisica de sensores, placa y red se realiza despues de cargar.
-
-## 6) Backend y pagina web
-
-El backend recibe mediciones y expone una pagina web con graficos.
-
-Pasos:
-1) Ir a backend/
-2) Instalar dependencias:
-   - npm ci (Node 24.21.0)
-3) Iniciar servidor:
-  - npm run start:esp32
-  - o ejecutar run-esp32.bat
-4) Abrir la pagina:
-   - http://localhost:3001/
-
-Si el PC esta conectado al AP del ESP32, tambien puedes abrir:
-- http://192.168.4.2:3001/
-
-## 7) Formato de mediciones (mediciones.jsonl)
-
-El backend guarda los datos en backend/data/mediciones.jsonl (una medicion por linea).
-Para detalles del formato, exportacion a CSV y ejemplos, ver [backend/README.md](backend/README.md).
-
-## 8) Endpoints utiles
-
-La lista completa de endpoints y ejemplos esta en [backend/README.md](backend/README.md).
-
-## 9) Solucion de problemas
-
-El dashboard consulta aproximadamente cada 10 s. Muestra carga, ausencia de
-mediciones, fallo de consulta y antiguedad mayor de 90 s. Si falla la conexion,
-conserva los ultimos datos y permite reintentar con **Actualizar ahora**. Un
-backend disponible no prueba que esten llegando nuevas muestras ni que todos los
-sensores funcionen; DHT22 no es observable por separado. Los graficos muestran
-60 mediciones, no 60 minutos. Mas detalle en [guia backend](backend/README.md).
-
-- La pagina no carga: confirma que el backend este corriendo en el puerto 3001.
-- No llegan datos: revisa BACKEND_URL y que el PC este en la red del ESP32.
-- Sensores con NaN: revisar cableado y direccion I2C.
-- GPS sin satelites: necesita cielo abierto y tiempo para fijar.
+Más detalles: [documentación completa](docs/README.md) · [limitaciones](docs/general/02-estado-del-prototipo.md) · [API](backend/README.md).

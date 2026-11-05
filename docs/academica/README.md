@@ -1,24 +1,37 @@
-# Documentación académica/formativa — Estación Meteorológica
+# Documentación académica · Universidad Católica del Norte
 
-## Nivel 4 — Documentación académica y formativa
+La estación nació como trabajo grupal de **Ingeniería y Desarrollo Sustentable** en la Universidad Católica del Norte. Cursé esta asignatura de **5 SCT** en el **cuarto semestre** de Ingeniería Civil en Computación e Informática. En el proyecto participamos seis estudiantes de dos carreras.
 
-**Asignatura:** Ingeniería y Desarrollo Sustentable · **Carga:** 5 SCT · **Ubicación:** 4.º semestre de Ingeniería Civil en Computación Informática · **Institución:** Universidad Católica del Norte.
+## Informe final
 
-Los informes conservan lo que se presentó en su etapa. Son evidencia del proceso formativo y del diseño/entrega de ese momento; no reemplazan la especificación técnica actual ni certifican por sí solos la versión ejecutable más reciente.
+**Título:** _Estación Meteorológica de Código Abierto para la Región de Coquimbo_.
 
-## Catálogo de originales
+**Fecha:** 6 de diciembre de 2025.
 
-| Documento                             | Tipo                    | Vigencia                                           |
-| ------------------------------------- | ----------------------- | -------------------------------------------------- |
-| [informe.pdf](../informe/informe.pdf) | Entregable publicado    | Histórico; alcance/fecha según el propio documento |
-| [informe.tex](../informe/informe.tex) | Fuente de informe LaTeX | Histórico; alcance/fecha según el propio documento |
+[Informe PDF](../informe/informe.pdf) · [Fuente LaTeX](../informe/informe.tex) · [Figuras](../informe/figuras/).
 
-Las figuras, estilos y anexos de apoyo permanecen junto a sus informes. Cada informe conserva el alcance y la fecha indicados en su contenido.
+| Ingeniería Civil Industrial (ICI) | Ingeniería Civil en Computación e Informática (ICCI) |
+| --------------------------------- | ---------------------------------------------------- |
+| Martín Avilés                     | Óscar Merino                                         |
+| Javiera Carpio                    | Pablo Guzmán                                         |
+| Francisco Contreras               |                                                      |
+| Jorge Vicencio                    |                                                      |
 
-## Cómo leer este nivel
+## Contribuciones
 
-1. Consultar el problema, investigación y propuesta del período que indique el informe.
-2. Identificar alcance, metodología, participantes y evidencias dentro de ese documento.
-3. Contrastar decisiones técnicas con los capítulos vigentes del repositorio antes de ejecutar o modificar software.
+| Participantes                            | Contribución principal                                                                                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Pablo Guzmán**                         | Diseño del circuito electrónico y programación del firmware Arduino.                                                                     |
+| **Óscar Merino**                         | Construcción de la maqueta física para la presentación.                                                                                  |
+| **Jorge Vicencio y Francisco Contreras** | Simulación en AnyLogic y frontend sencillo con uso de Node.js para la entrega final; participación en informes, reportes y presentación. |
+| **Martín Avilés y Javiera Carpio**       | Trabajo principal en informes, reportes y presentación.                                                                                  |
 
-[Volver al índice por niveles](../README.md).
+Los informes y la exposición fueron parte del trabajo colectivo. La simulación de AnyLogic y el frontend de la presentación académica no se incluyen en este repositorio. Después de la asignatura desarrollé el backend Node.js y el frontend web actuales como continuación personal del circuito y firmware.
+
+## Alcance de la entrega
+
+El informe estudia una estación de bajo costo orientada a Coquimbo, con enfoque en sostenibilidad y educación. Incluye análisis PESTEL, FODA y Porter, planificación y propuestas de ampliación. Describe un prototipo demostrativo de interior, sin pruebas de campo.
+
+La propuesta incluye PM₂.₅/PM₁₀ y alimentación solar. El firmware actual no mide partículas y la autonomía solar sigue pendiente de ensayo. El informe y sus recursos se conservan como originales de la entrega; la [documentación técnica](../tecnica/01-arquitectura.md) describe la implementación actual.
+
+[Volver al índice](../README.md).

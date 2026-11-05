@@ -22,7 +22,7 @@ flowchart LR
 ## Para que sirve
 
 - Centraliza las mediciones de la estacion en un solo lugar.
-- Permite ver datos en tiempo real desde el navegador.
+- Permite consultar datos desde el navegador mediante actualizaciones periodicas.
 - Facilita la integracion con otras herramientas via API.
 
 ## Requisitos

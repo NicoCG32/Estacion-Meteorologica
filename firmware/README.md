@@ -3,6 +3,7 @@
 Este firmware corre en el ESP32-S3 y es el encargado de obtener las mediciones fisicas. Lee los sensores, fusiona los valores y envia un JSON al backend a intervalos regulares.
 
 Ver tambien:
+
 - [manual-de-usuario.md](../manual-de-usuario.md)
 - [backend/README.md](../backend/README.md)
 - [diagramas/circuito.jpg](../diagramas/circuito.jpg)
@@ -56,6 +57,7 @@ firmware/
 ## Configuracion clave
 
 En [EstacionMeteorologica/config.h](EstacionMeteorologica/config.h):
+
 - AP_SSID / AP_PASS: red Wi-Fi creada por el ESP32
 - BACKEND_URL: URL del backend (PC conectado al AP)
 - INTERVALO_MEDIDA_MS: lectura de sensores
@@ -95,17 +97,17 @@ firmware/EstacionMeteorologica/
 El perfil `esp32s3` de [sketch.yaml](EstacionMeteorologica/sketch.yaml) fija el
 entorno que se compilo con Arduino CLI **1.5.1**:
 
-| Componente | Version |
-| --- | --- |
-| Core Espressif ESP32 | 3.3.12 |
+| Componente                | Version                                  |
+| ------------------------- | ---------------------------------------- |
+| Core Espressif ESP32      | 3.3.12                                   |
 | Placa/FQBN de compilacion | esp32:esp32:esp32s3 (ESP32S3 Dev Module) |
-| Adafruit BME280 Library | 2.3.0 |
-| Adafruit Unified Sensor | 1.1.15 |
-| Adafruit BusIO | 1.17.4 |
-| DHT sensor library | 1.4.7 |
-| Sensirion I2C SCD4x | 1.1.0 |
-| Sensirion Core | 0.7.3 |
-| TinyGPSPlus | 1.0.3 |
+| Adafruit BME280 Library   | 2.3.0                                    |
+| Adafruit Unified Sensor   | 1.1.15                                   |
+| Adafruit BusIO            | 1.17.4                                   |
+| DHT sensor library        | 1.4.7                                    |
+| Sensirion I2C SCD4x       | 1.1.0                                    |
+| Sensirion Core            | 0.7.3                                    |
+| TinyGPSPlus               | 1.0.3                                    |
 
 Desde la raiz del repositorio, con Arduino CLI instalado:
 
@@ -122,8 +124,7 @@ Se pueden configurar los directorios mediante `arduino-cli.yaml` y `--config-fil
 En Arduino IDE, abrir el .ino dentro de esa carpeta y seleccionar el core y
 librerias de la tabla. El perfil generico valida compilacion, no identifica las
 opciones USB, flash o PSRAM de la placa fisica: confirmar el modelo y esas opciones
-antes de cargar. Seleccionar su puerto y cargar manualmente. No se ha realizado
-una carga o prueba fisica durante esta estandarizacion.
+antes de cargar. Seleccionar su puerto y cargar manualmente.
 
 Despues de cargar, comprobar Serial a 115200, auto-test de sensores, GPS a 9600,
 conexion del PC al AP, IP del PC en BACKEND_URL y recepcion de POST en un DATA_FILE
@@ -135,7 +136,17 @@ fallos pueden impedir que llegue una nueva medicion en cada intervalo.
 JSON que envia el ESP32 al backend:
 
 ```json
-{"temperatura_aire_celsius":24.3,"incertidumbre_temperatura_celsius":0.2,"humedad_aire_porcentaje":55.1,"incertidumbre_humedad_porcentaje":1.0,"presion_atmosferica_hPa":1012.4,"concentracion_CO2_ppm":580,"latitud_grados":-32.9,"longitud_grados":-60.7,"numero_satelites":7}
+{
+  "temperatura_aire_celsius": 24.3,
+  "incertidumbre_temperatura_celsius": 0.2,
+  "humedad_aire_porcentaje": 55.1,
+  "incertidumbre_humedad_porcentaje": 1.0,
+  "presion_atmosferica_hPa": 1012.4,
+  "concentracion_CO2_ppm": 580,
+  "latitud_grados": -32.9,
+  "longitud_grados": -60.7,
+  "numero_satelites": 7
+}
 ```
 
 ## FAQ

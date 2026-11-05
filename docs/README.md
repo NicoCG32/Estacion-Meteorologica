@@ -1,76 +1,56 @@
-# Documentación de Estación Meteorológica
+# Documentación — Estación Meteorológica
 
-Prototipo de estación física con captura local, backend y dashboard. Su uso como instrumento científico requiere calibración y validación del montaje.
+La documentación se organiza en cuatro áreas: propósito y uso, implementación técnica, desarrollo y contexto académico. El informe de 2025 reúne la entrega universitaria; las guías técnicas describen la versión actual.
 
-## Documentación por cuatro tipos
+| Área           | Para qué sirve                                                                 | Leer primero                                             |
+| -------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| **General**    | Conocer propósito, funciones y recorrido de uso sin entrar en el código.       | [Propósito y alcance](general/01-proposito-y-alcance.md) |
+| **Técnica**    | Entender hardware, firmware, APIs, persistencia, algoritmos, flujos y estados. | [Arquitectura](tecnica/01-arquitectura.md)               |
+| **Desarrollo** | Saber qué se decidió, qué está verificado y qué falta.                         | [Evolución](desarrollo/01-evolucion-y-metodo.md)         |
+| **Académica**  | Consultar el informe grupal original, su contexto y atribuciones.              | [Material formativo](academica/README.md)                |
 
-| Tipo                    | Qué encontrarás                                                 | Por dónde empezar                                                                                                                                |
-| ----------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| General                 | Problemática, público, solución y motivación personal           | [Propuesta](00-problematica-cliente-y-valor.md) · [Origen](16-motivacion-y-contexto.md)                                                          |
-| Técnica                 | Arquitectura, dominio, datos, interfaz y puesta en marcha       | [Arquitectura](01-arquitectura-general.md) · [Instalación](09-instalacion-y-despliegue.md)                                                       |
-| Desarrollo del proyecto | Etapas, metodología, justificación, proyección y costos CLP/USD | [Metodología](17-desarrollo-y-metodologia.md) · [Proyección](15-escalabilidad-y-nuevos-mercados.md) · [Costos](18-analisis-economico-clp-usd.md) |
-| Académica/formativa     | Contexto del curso, informes y anexos de la etapa formativa     | [Catálogo académico](academica/README.md)                                                                                                        |
+## Recorridos recomendados
 
-## Rutas de lectura
+**Primera visita:** [propósito](general/01-proposito-y-alcance.md) → [funciones y límites](general/02-estado-del-prototipo.md) → [uso](general/03-uso-y-recorrido.md).
 
-- **Conocer el proyecto:** [propuesta](00-problematica-cliente-y-valor.md) → [motivación](16-motivacion-y-contexto.md) → [funcionalidades](02-funcionalidades.md).
-- **Utilizarlo o desplegarlo:** [recorrido](03-flujo-de-usuario.md) → [instalación](09-instalacion-y-despliegue.md).
-- **Desarrollar o contribuir:** [arquitectura](01-arquitectura-general.md) → [dominio y datos](04-base-de-datos.md) → [reglas](05-motor-o-nucleo-de-negocio.md).
-- **Evaluar su evolución:** [metodología](17-desarrollo-y-metodologia.md) → [proyección](15-escalabilidad-y-nuevos-mercados.md) → [costos](18-analisis-economico-clp-usd.md).
+**Para operar el prototipo:** [uso](general/03-uso-y-recorrido.md) → [firmware](tecnica/02-hardware-y-firmware.md) → [API y red](tecnica/04-api-y-seguridad.md) → [pruebas](tecnica/07-verificacion.md).
 
-## Tabla de contenidos
+**Para estudiar o modificar el código:** [arquitectura](tecnica/01-arquitectura.md) → [modelo de datos](tecnica/03-datos-y-persistencia.md) → [reglas](tecnica/06-calidad-y-algoritmos.md) → [flujos](tecnica/05-flujos-y-estados.md).
 
-| Capítulo | Documento                                                                          |
-| -------- | ---------------------------------------------------------------------------------- |
-| 00       | [Problemática, cliente y solución](00-problematica-cliente-y-valor.md)             |
-| 01       | [Arquitectura por niveles](01-arquitectura-general.md)                             |
-| 02       | [Catálogo funcional](02-funcionalidades.md)                                        |
-| 03       | [Recorrido y estados](03-flujo-de-usuario.md)                                      |
-| 04       | [Dominio, entidades y persistencia](04-base-de-datos.md)                           |
-| 05       | [Reglas y núcleo](05-motor-o-nucleo-de-negocio.md)                                 |
-| 06       | [Integraciones y asistencia](06-capa-de-ia-o-analisis.md)                          |
-| 07       | [Diseño y accesibilidad](07-diseno-e-identidad.md)                                 |
-| 08       | [Salidas y entregables](08-exportacion-e-informes.md)                              |
-| 09       | [Puesta en marcha y distribución](09-instalacion-y-despliegue.md)                  |
-| 15       | [Justificación, proyección y escalabilidad](15-escalabilidad-y-nuevos-mercados.md) |
-| 16       | [Motivación personal y contexto](16-motivacion-y-contexto.md)                      |
-| 17       | [Etapas y metodología](17-desarrollo-y-metodologia.md)                             |
-| 18       | [Escenarios económicos CLP / USD](18-analisis-economico-clp-usd.md)                |
+## Índice completo
 
-## Guías especializadas
+### General
 
-- [informe/informe.tex](informe/informe.tex).
-- [logos.sty](informe/logos.sty).
-- [PDF](informe/informe.pdf).
+- [01 · Propósito, origen y alcance](general/01-proposito-y-alcance.md)
+- [02 · Qué funciona y qué no](general/02-estado-del-prototipo.md)
+- [03 · Recorrido de uso](general/03-uso-y-recorrido.md)
 
-## Informe academico
+### Técnica
 
-La fuente esta en [informe/informe.tex](informe/informe.tex), usa
-[logos.sty](informe/logos.sty) y recursos en informe/figuras/. El
-[PDF](informe/informe.pdf) es material de referencia; las guias de operacion y
-configuracion actuales estan enlazadas arriba.
+- [01 · Arquitectura en contexto, contenedores y componentes](tecnica/01-arquitectura.md)
+- [02 · Montaje, sensores y firmware](tecnica/02-hardware-y-firmware.md)
+- [03 · Dominio, datos y persistencia JSONL](tecnica/03-datos-y-persistencia.md)
+- [04 · API, configuración y fronteras de seguridad](tecnica/04-api-y-seguridad.md)
+- [05 · Flujos, secuencias y máquinas de estado](tecnica/05-flujos-y-estados.md)
+- [06 · Agregación, validación y anomalías](tecnica/06-calidad-y-algoritmos.md)
+- [07 · Pruebas y evidencia de verificación](tecnica/07-verificacion.md)
 
-Ver tambien:
+### Desarrollo
 
-- [README.md](../README.md)
+- [01 · Evolución y forma de trabajo](desarrollo/01-evolucion-y-metodo.md)
+- [02 · Prioridades y posibilidades futuras](desarrollo/02-prioridades.md)
 
-## Compilacion manual
+### Académica
 
-- pdflatex -jobname informe informe.tex
-- repetir una segunda vez para referencias
+- [Contexto y autores del informe](academica/README.md)
+- [Informe PDF de la asignatura](informe/informe.pdf) · [Fuente LaTeX](informe/informe.tex) · [Figuras originales](informe/figuras/)
 
-## Script de compilacion (Windows)
+## Guías y recursos
 
-En Windows puedes usar el script en docs/informe/ (recomendado):
+- [Manual de usuario](../manual-de-usuario.md)
+- [Guía del backend](../backend/README.md)
+- [Guía del firmware](../firmware/README.md)
+- [Esquema eléctrico editable](../diagramas/circuito.drawio) · [Vista del esquema](../diagramas/circuito.png)
+- [Identidad visual](../branding/README.md)
 
-- compile-informe.bat
-
-Uso:
-
-- abrir una terminal en docs/informe/
-- ejecutar compile-informe.bat
-- salida: informe.pdf
-
-## Uso y distribución
-
-[Presentación y descargas](../README.md) · [Licencia y créditos](../LICENSING.md).
+Los diagramas de contexto, contenedores, hardware y persistencia incluyen versiones PNG y SVG junto a sus fuentes editables DOT en [`docs/diagramas/`](diagramas/).

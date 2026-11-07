@@ -23,6 +23,21 @@ Estación Meteorológica es un prototipo educativo de monitoreo ambiental. Un ES
 
 El proyecto permite estudiar el recorrido completo de una medición, desde el sensor hasta su análisis. Su alcance actual es local y experimental; para uso científico o en exteriores requiere calibración y ensayos del montaje.
 
+## Estado real del proyecto
+
+| Nivel | Qué significa en esta versión |
+| --- | --- |
+| ✅ **Implementado** | Prototipo de firmware para captura ambiental, servidor local para mediciones y panel web con series y exportación de datos. |
+| 🧪 **En validación** | Calibración de sensores, precisión, estabilidad del montaje y funcionamiento continuado fuera de condiciones de laboratorio. |
+| 🧭 **Posible evolución** | Uso científico o en exteriores después de completar calibración, ensayos de campo y validaciones independientes; no se declara como estación certificada. |
+
+<details>
+<summary><strong>Cómo leer este estado</strong></summary>
+
+Una función **implementada** existe en el código o en los artefactos del proyecto, pero eso no acredita automáticamente todas sus pruebas. «En validación» identifica capacidades todavía sujetas a comprobaciones; «pendiente» no es una promesa de entrega. El alcance se contrasta con el código, los informes originales y las releases de cada versión.
+
+</details>
+
 ## Origen
 
 El proyecto nació como trabajo grupal de **Ingeniería y Desarrollo Sustentable** en la Universidad Católica del Norte, orientado a la Región de Coquimbo. Diseñé el circuito y programé el firmware Arduino durante la asignatura; después desarrollé el backend y el frontend web actuales como continuación personal. El [contexto académico y los créditos](docs/academica/README.md) describen las contribuciones del equipo y reúnen el informe final de 2025.

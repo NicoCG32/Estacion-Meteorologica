@@ -20,6 +20,4 @@ El código propio **puede usarse comercialmente bajo ISC sin una autorización s
 
 [Análisis de sostenibilidad y posibles servicios](docs/desarrollo/03-viabilidad-economica-y-sostenibilidad.md) · [Plan de pilotos](docs/desarrollo/04-pilotos-y-modelos-de-servicio.md).
 
-Conserva los avisos exigidos por la licencia y los créditos de otros autores. Las dependencias, librerías, recursos gráficos e informes con derechos propios conservan sus condiciones; la licencia del código no se utiliza para cambiar las de terceros ni para conceder derechos sobre marcas.
-
-Para adaptaciones o servicios contratados se pueden acordar alcance, autoría y compensación por separado. Contacto: [NicoCG32](https://github.com/NicoCG32).
+Para acuerdos de trabajos o servicios adicionales: [perfil NicoCG32](https://github.com/NicoCG32). La documentación actual no fija tarifas, regalías ni condiciones comerciales para estos servicios.

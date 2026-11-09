@@ -27,6 +27,12 @@ arduino-cli compile --profile esp32s3 firmware/EstacionMeteorologica
 
 La [guía de firmware](../../firmware/README.md) detalla las versiones fijadas del core y las librerías, la selección de placa y la carga. Después de compilar, verifica el programa en el ESP32 con el monitor serie y un archivo de datos de prueba.
 
+## Datos históricos: una comprobación necesaria
+
+El archivo versionado [`backend/data/mediciones.jsonl`](../../backend/data/mediciones.jsonl) contiene **43 filas del 6-12-2025**; los registros **26–28** tienen **181,39 °C** y **−130,8 hPa**, fuera del validador actual. Esto no representa una falla demostrada del backend **actual**, que aplica rangos a las nuevas solicitudes: el archivo puede provenir de una versión histórica o de pruebas cuyos detalles no están conservados.
+
+La muestra cubre unos **15 minutos**, **no** valida la meta académica de **≥95 % de completitud durante 2–4 horas** ni precisión ambiental. [Criterios de interpretación, código reproducible y plan de ensayos](08-evidencia-y-validacion-experimental.md).
+
 ## Ensayos del montaje
 
 | Prueba               | Qué medir o registrar                                                            |
@@ -39,4 +45,4 @@ La [guía de firmware](../../firmware/README.md) detalla las versiones fijadas d
 | Estabilidad          | Archivo JSONL tras un ensayo prolongado y comportamiento en reinicios.           |
 | Energía solar        | Montaje, protecciones y autonomía real, si se llega a implementar.               |
 
-Registra fecha, entorno, instrumentos de referencia y resultados de cada ensayo, incluyendo pérdidas y fallos. Estos registros permiten evaluar precisión, continuidad y autonomía antes de ampliar el uso del prototipo.
+Registra fecha, entorno, instrumentos de referencia y resultados de cada ensayo, incluyendo pérdidas y fallos. Estos registros permiten evaluar precisión, continuidad y autonomía antes de ampliar el uso del prototipo. **El [estudio de rentabilidad](../desarrollo/03-viabilidad-economica-y-sostenibilidad.md) depende también del costo real de conseguir esta calidad.**

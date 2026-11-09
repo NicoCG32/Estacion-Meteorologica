@@ -13,7 +13,9 @@ El montaje combina un ESP32-S3 con tres sensores ambientales y un GPS. La tabla 
 
 [Esquema original editable (`.drawio`)](../../diagramas/circuito.drawio) · [Imagen del esquema](../../diagramas/circuito.png).
 
-**Energía:** el esquema propone panel solar → TP4056 → batería → regulador → placa. Su dimensionamiento, regulación, protecciones y autonomía requieren ensayo. Antes de alimentar la placa con baterías de litio, valida el circuito y los componentes utilizados.
+**Energía:** el esquema propone panel solar → TP4056 → batería → regulador → placa. **Es una propuesta**, no un sistema solar validado. Faltan potencia media y de pico medida, selección de protecciones compatibles, ciclo de carga, dimensionamiento y pruebas de autonomía. Antes de alimentar la placa con baterías de litio, validar el diseño, los componentes y la seguridad eléctrica.
+
+**Alcance ambiental:** el firmware actual **no integra un sensor de PM₂.₅/PM₁₀**, aunque esa variable se propuso en el informe académico. Tampoco se documentan sensores de lluvia o de viento. Por lo tanto, no debe promocionarse como estación meteorológica profesional completa ni como monitor reglamentario de contaminación. [Contraste con el LaTeX](../academica/02-lectura-critica-del-informe.md).
 
 ## Programa y cadencia
 
@@ -45,4 +47,4 @@ Los valores `incertidumbre_*` son **estimaciones heurísticas** (p. ej., mitad d
 
 ## Compilación y ensayo
 
-El perfil [`sketch.yaml`](../../firmware/EstacionMeteorologica/sketch.yaml) fija core y librerías; consulta versiones y comando exacto en [firmware/README.md](../../firmware/README.md). Compilar no confirma conexión eléctrica, recepción GPS, precisión o autonomía. Antes de un uso prolongado faltan pruebas físicas reproducibles, revisión térmica y de energía, y comparación con instrumentos de referencia.
+El perfil [`sketch.yaml`](../../firmware/EstacionMeteorologica/sketch.yaml) fija core y librerías; consulta versiones y comando exacto en [firmware/README.md](../../firmware/README.md). Compilar no confirma conexión eléctrica, recepción GPS, precisión o autonomía. Antes de un uso prolongado faltan pruebas físicas reproducibles, revisión térmica y de energía, y comparación con instrumentos de referencia. El archivo histórico tiene registros fuera de rango: [auditoría experimental y protocolo](08-evidencia-y-validacion-experimental.md). La [viabilidad económica](../desarrollo/03-viabilidad-economica-y-sostenibilidad.md) tampoco puede calcularse con un diagrama de cableado sin inventario y medidas de consumo.

@@ -82,6 +82,12 @@ El servidor añade `id`, `timestamp` en UTC al procesar el registro en la cola y
 
 Los límites son filtros de entrada, **no rangos de exactitud**. La fuente de reglas es [`backend/src/config.js`](../../backend/src/config.js).
 
+## Compatibilidad histórica del conjunto incluido
+
+El archivo [`backend/data/mediciones.jsonl`](../../backend/data/mediciones.jsonl) contiene **43 registros históricos**, algunos **anteriores a la forma actual del modelo**: ninguno declara el campo `sospechosa`; los ID **26–28** incluyen **181,39 °C** y **−130,8 hPa**. **El backend valida nuevas entradas**, pero la recuperación de líneas históricas no aplica retrospectivamente todas las reglas de admisión vigentes. No borrar esos casos para simular una serie impecable: mantener datos originales y etiquetarlos analíticamente mediante herramientas de QA/QC.
+
+La ausencia de coordenadas válidas en este archivo no permite afirmar que el GPS sea defectuoso. El timestamp corresponde al servidor y el archivo **no permite inferir precisión o completitud experimental**. [Auditoría reproducible y pruebas pendientes](08-evidencia-y-validacion-experimental.md).
+
 ## Escritura, recarga y exportación
 
 1. En cada arranque, `store.js` recorre el JSONL; ignora líneas inválidas y recompone el total, el último registro, los IDs y la ventana reciente.

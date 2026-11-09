@@ -17,6 +17,8 @@ La documentación se organiza en cuatro áreas: propósito y uso, implementació
 
 **Para estudiar o modificar el código:** [arquitectura](tecnica/01-arquitectura.md) → [modelo de datos](tecnica/03-datos-y-persistencia.md) → [reglas](tecnica/06-calidad-y-algoritmos.md) → [flujos](tecnica/05-flujos-y-estados.md).
 
+**Para evaluar viabilidad e impacto:** [informe original](academica/README.md) → [lectura crítica](academica/02-lectura-critica-del-informe.md) → [evidencia experimental](tecnica/08-evidencia-y-validacion-experimental.md) → [economía](desarrollo/03-viabilidad-economica-y-sostenibilidad.md) → [pilotos](desarrollo/04-pilotos-y-modelos-de-servicio.md).
+
 ## Índice completo
 
 ### General
@@ -33,16 +35,20 @@ La documentación se organiza en cuatro áreas: propósito y uso, implementació
 - [04 · API, configuración y fronteras de seguridad](tecnica/04-api-y-seguridad.md)
 - [05 · Flujos, secuencias y máquinas de estado](tecnica/05-flujos-y-estados.md)
 - [06 · Agregación, validación y anomalías](tecnica/06-calidad-y-algoritmos.md)
-- [07 · Pruebas y evidencia de verificación](tecnica/07-verificacion.md)
+- [07 · Pruebas de software y ensayos del montaje](tecnica/07-verificacion.md)
+- [08 · Auditoría del archivo histórico y protocolo de validación experimental](tecnica/08-evidencia-y-validacion-experimental.md)
 
 ### Desarrollo
 
 - [01 · Evolución y forma de trabajo](desarrollo/01-evolucion-y-metodo.md)
 - [02 · Prioridades y posibilidades futuras](desarrollo/02-prioridades.md)
+- [03 · Estudio económico: costos, modelos de servicio, rentabilidad y sostenibilidad](desarrollo/03-viabilidad-economica-y-sostenibilidad.md)
+- [04 · Ruta de pilotos educativos y validación de disposición a pagar](desarrollo/04-pilotos-y-modelos-de-servicio.md)
 
 ### Académica
 
 - [Contexto y autores del informe](academica/README.md)
+- [Lectura crítica del LaTeX de 2025: objetivos vs. implementación y evidencias](academica/02-lectura-critica-del-informe.md)
 - [Informe PDF de la asignatura](informe/informe.pdf) · [Fuente LaTeX](informe/informe.tex) · [Figuras originales](informe/figuras/)
 
 ## Guías y recursos

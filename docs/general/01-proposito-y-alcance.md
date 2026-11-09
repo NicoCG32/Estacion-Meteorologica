@@ -10,6 +10,12 @@ Una lectura aislada aporta poco para seguir tendencias. Para estudiar una serie 
 
 Quiero que sirva para aprender instrumentación y software de manera conjunta: capturar una lectura, reconocer sus unidades, detectar datos extraños y conservar una serie que se pueda revisar. La sostenibilidad da un contexto concreto a esa integración.
 
+## Por qué puede ser conveniente
+
+Para educación y laboratorios, integrar **sensores, firmware, API, historial y visualización local** permite estudiar un sistema completo con código que se puede inspeccionar y adaptar. La [EPA](https://www.epa.gov/air-sensor-toolbox/air-sensor-use-and-study-design) destaca los usos educativos y de monitoreo complementario, **no regulatorio**, de sensores de bajo costo. El [SINCA chileno](https://sinca.mma.gob.cl/index.php/pagina) separa registros oficiales de datos no validados: por eso nuestra estación **no debe venderse ni describirse como equivalente a un monitor normativo**.
+
+El informe de 2025 estimó **CLP $100.000–$150.000** como costo de materiales de un piloto, cifra histórica sin facturas. La [prefactibilidad económica y ambiental](../desarrollo/03-viabilidad-economica-y-sostenibilidad.md) explica el valor educativo, el costo total de operación y los escenarios de rentabilidad sin confundir hipótesis con resultados medidos.
+
 ## A quién puede servir
 
 El prototipo está orientado al aprendizaje y la experimentación con IoT, sensores, adquisición y calidad de datos. Puede servir como base para talleres o laboratorios educativos. El informe propone además usos comunitarios y municipales que requieren desarrollo y validación adicionales.

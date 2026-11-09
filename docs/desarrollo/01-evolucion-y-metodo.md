@@ -24,4 +24,4 @@ El proyecto comenzó en 2025 como trabajo grupal de **Ingeniería y Desarrollo S
 
 Las [pruebas de software](../tecnica/07-verificacion.md) y la comparación con instrumentos de referencia cubren aspectos distintos del sistema. Para continuar el desarrollo, la prioridad es repetir el montaje y comprobar la conservación de series durante una operación prolongada.
 
-[Próximos pasos](02-prioridades.md) · [Contribuir](../../CONTRIBUTING.md) · [Backend](../../backend/README.md) · [Firmware](../../firmware/README.md).
+[Próximos pasos](02-prioridades.md) · [Economía y sostenibilidad](03-viabilidad-economica-y-sostenibilidad.md) · [Pilotos](04-pilotos-y-modelos-de-servicio.md) · [Contribuir](../../CONTRIBUTING.md) · [Backend](../../backend/README.md) · [Firmware](../../firmware/README.md).
